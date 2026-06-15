@@ -12,7 +12,8 @@
       "PowerShell(git *)",
       "PowerShell(gh auth *)",
       "WebFetch(domain:project-96y3v.vercel.app)",
-      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"User\"\\); cd \"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\"; git status)"
+      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"User\"\\); cd \"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\"; git status)",
+      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"User\"\\); cd \"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\"; git status; git ls-files --others --exclude-standard)"
     ]
   }
 }
