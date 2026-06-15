@@ -10,7 +10,8 @@
       "PowerShell(gh *)",
       "PowerShell(winget *)",
       "PowerShell(git *)",
-      "PowerShell(gh auth *)"
+      "PowerShell(gh auth *)",
+      "WebFetch(domain:project-96y3v.vercel.app)"
     ]
   }
 }

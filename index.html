@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The BRP Lounge — Bhupender Raj Purohit</title>
+<link rel="preload" as="image" href="renders/1.jpg">
 <style>
   @font-face{
     font-family:'Conthrax';
@@ -317,7 +318,8 @@
     .gallery{columns:2;column-gap:8px}
     .featured-grid{grid-template-columns:1fr}
     .feat.big,.feat.tall,.feat.wide{grid-column:span 1;aspect-ratio:21/12}
-    .hero-bg{background-size:contain;background-color:#000;transform:none!important}
+    .hero{min-height:56vw}
+    .hero-bg{background-size:cover;background-position:center center;transform:none!important}
     .shot,.feat,.reveal,.about-photo,.about-copy{opacity:1!important;transform:none!important}
     .section-title .word{opacity:1!important}
     .eyebrow{clip-path:none!important}
