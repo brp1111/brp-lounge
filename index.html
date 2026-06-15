@@ -49,8 +49,9 @@
     overflow-x:hidden;
     -webkit-font-smoothing:antialiased;
   }
-  img{display:block;max-width:100%;-webkit-user-drag:none;user-select:none}
-  video{-webkit-user-drag:none;user-select:none}
+  img{display:block;max-width:100%;-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none}
+  video{-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none}
+  .shot img,.shot video,.feat img,#lbImg,#lbVid,.about-photo img{pointer-events:none}
   a{color:inherit;text-decoration:none}
 
   /* ---------- HUD bracket divider ---------- */
@@ -541,7 +542,7 @@
 
   /* ---------- prevent right-click save on media ---------- */
   document.addEventListener('contextmenu',e=>{
-    if(['IMG','VIDEO'].includes(e.target.tagName))e.preventDefault();
+    if(['IMG','VIDEO'].includes(e.target.tagName)||e.target.closest('.shot,.feat,.about-photo,#lightbox'))e.preventDefault();
   });
   document.addEventListener('dragstart',e=>{
     if(['IMG','VIDEO'].includes(e.target.tagName))e.preventDefault();
