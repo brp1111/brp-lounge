@@ -567,9 +567,28 @@
     }
   }
 
-  function open(i){idx=i;show(idx);lb.classList.add('open');document.body.style.overflow='hidden'}
-  function close(){lb.classList.remove('open');document.body.style.overflow='';lbVid.pause();lbVid.src=''}
+  function open(i){
+    idx=i;show(idx);lb.classList.add('open');document.body.style.overflow='hidden';
+    history.pushState({lightbox:true},'');
+  }
+  function close(){
+    if(!lb.classList.contains('open'))return;
+    lb.classList.remove('open');document.body.style.overflow='';lbVid.pause();lbVid.src='';
+    if(history.state&&history.state.lightbox)history.back();
+  }
   function go(d){idx=(idx+d+srcs.length)%srcs.length;show(idx)}
+
+  /* back gesture / browser back closes lightbox */
+  window.addEventListener('popstate',()=>{
+    if(lb.classList.contains('open')){
+      lb.classList.remove('open');document.body.style.overflow='';lbVid.pause();lbVid.src='';
+    }
+  });
+
+  /* swipe down to close */
+  let tsY=0;
+  lb.addEventListener('touchstart',e=>{tsY=e.touches[0].clientY},{passive:true});
+  lb.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-tsY>80)close()},{passive:true});
 
   items.forEach((it,i)=>it.addEventListener('click',()=>open(i)));
   document.getElementById('lbClose').addEventListener('click',close);
