@@ -9,7 +9,8 @@
       "PowerShell(Get-ChildItem \"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\" -Recurse -File | Select-Object @{N='Path';E={$_.FullName.Replace\\(\"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\\\\\",\"\"\\)}} | Sort-Object Path)",
       "PowerShell(gh *)",
       "PowerShell(winget *)",
-      "PowerShell(git *)"
+      "PowerShell(git *)",
+      "PowerShell(gh auth *)"
     ]
   }
 }

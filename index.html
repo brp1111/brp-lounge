@@ -313,9 +313,13 @@
     .section{padding:64px 18px}
   }
   @media(max-width:560px){
-    .gallery{columns:1}
+    .gallery{columns:2;column-gap:8px}
     .featured-grid{grid-template-columns:1fr}
     .feat.big,.feat.tall,.feat.wide{grid-column:span 1;aspect-ratio:21/12}
+    .hero-bg{background-size:contain;background-color:#000;transform:none!important}
+    .shot,.feat,.reveal,.about-photo,.about-copy{opacity:1!important;transform:none!important}
+    .section-title .word{opacity:1!important}
+    .eyebrow{clip-path:none!important}
   }
   @media(prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important;scroll-behavior:auto}
@@ -461,7 +465,7 @@
   /* ---------- hero parallax ---------- */
   const heroBg=document.querySelector('.hero-bg');
   window.addEventListener('scroll',()=>{
-    heroBg.style.transform=`scale(1.04) translateY(${window.scrollY*.22}px)`;
+    if(window.innerWidth>560)heroBg.style.transform=`scale(1.04) translateY(${window.scrollY*.22}px)`;
   },{passive:true});
 
   /* ---------- section title word split ---------- */
