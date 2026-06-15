@@ -315,15 +315,31 @@
     .gallery{columns:2}
     .section{padding:64px 18px}
   }
+  @keyframes cardpop{
+    0%{opacity:0;transform:translateY(24px) scale(.94)}
+    65%{transform:translateY(-4px) scale(1.02)}
+    100%{opacity:1;transform:none}
+  }
+  @keyframes fadeup{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:none}
+  }
   @media(max-width:560px){
     .gallery{columns:2;column-gap:8px}
     .featured-grid{grid-template-columns:1fr}
     .feat.big,.feat.tall,.feat.wide{grid-column:span 1;aspect-ratio:21/12}
     .hero{min-height:56vw}
     .hero-bg{background-size:cover;background-position:center center;transform:none!important}
-    .shot,.feat,.reveal,.about-photo,.about-copy{opacity:1!important;transform:none!important}
-    .section-title .word{opacity:1!important}
-    .eyebrow{clip-path:none!important}
+    /* snappier reveal on mobile */
+    .reveal{transition-duration:.45s}
+    .about-photo{transition-duration:.55s}
+    .about-copy{transition-duration:.55s}
+    /* card pop entrance on mobile */
+    .shot.in,.feat.in{animation:cardpop .45s cubic-bezier(.2,.7,.2,1) both}
+    /* section words fade up faster */
+    .section-title .word{transition-duration:.4s}
+    /* touch press feedback */
+    .shot:active,.feat:active{filter:brightness(1.15);transition:filter .08s}
   }
   @media(prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important;scroll-behavior:auto}
@@ -483,9 +499,10 @@
 
 <script>
   /* ---------- scroll reveal ---------- */
+  const mob=window.innerWidth<=560;
   const io=new IntersectionObserver((es)=>{
     es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
-  },{threshold:.12});
+  },{threshold:mob?0:.12,rootMargin:mob?'0px':'0px'});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
   /* ---------- hero parallax ---------- */
@@ -508,11 +525,11 @@
     es.forEach(e=>{
       if(!e.isIntersecting)return;
       [...e.target.querySelectorAll('.feat,.shot')].forEach((c,i)=>{
-        setTimeout(()=>c.classList.add('in'),i*65);
+        setTimeout(()=>c.classList.add('in'),i*(mob?45:65));
       });
       cardIO.unobserve(e.target);
     });
-  },{threshold:.04});
+  },{threshold:mob?0:.04});
   document.querySelectorAll('.featured-grid,.gallery').forEach(el=>cardIO.observe(el));
 
   /* ---------- HUD line draw ---------- */
