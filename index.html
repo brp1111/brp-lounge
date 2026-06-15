@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The BRP Lounge — Bhupender Raj Purohit</title>
+<style>
+  @font-face{
+    font-family:'Conthrax';
+    src:url('Fonts/conthrax/conthrax-sb.ttf') format('truetype');
+    font-weight:100 900;font-style:normal;font-display:swap;
+  }
+  @font-face{
+    font-family:'Azeret Mono';
+    src:url('Fonts/Azeret_Mono/AzeretMono-VariableFont_wght.ttf') format('truetype');
+    font-weight:100 900;font-style:normal;font-display:swap;
+  }
+  @font-face{
+    font-family:'Azeret Mono';
+    src:url('Fonts/Azeret_Mono/AzeretMono-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight:100 900;font-style:italic;font-display:swap;
+  }
+
+  :root{
+    --black:#0A0A0C;
+    --panel:#121214;
+    --panel-2:#16161A;
+    --line:rgba(255,255,255,0.08);
+    --line-2:rgba(255,255,255,0.14);
+    --red:#D50000;
+    --grey:#777777;
+    --white:#F4F4F5;
+    --muted:rgba(244,244,245,0.55);
+    --faint:rgba(244,244,245,0.35);
+    --display:'Conthrax',sans-serif;
+    --body:'Azeret Mono',monospace;
+    --mono:'Azeret Mono',monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:var(--body);
+    font-weight:300;
+    line-height:1.7;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- HUD bracket divider ---------- */
+  .hud-rule{
+    width:100%;max-width:760px;margin:0 auto;height:22px;
+    display:block;opacity:.5;
+  }
+
+  /* ---------- shared section frame ---------- */
+  .section{padding:90px 24px;max-width:1280px;margin:0 auto}
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--red);margin-bottom:14px;
+  }
+  .section-title{
+    font-family:var(--display);font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;font-size:clamp(26px,4vw,44px);line-height:1.05;
+    color:var(--white);
+  }
+
+  /* ===================================================== HERO */
+  .hero{
+    position:relative;min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:24px;overflow:hidden;
+  }
+  .hero-bg{
+    position:absolute;inset:0;
+    background:#000 center/cover no-repeat;
+    background-image:url('renders/1.jpg');
+    transform:scale(1.04);
+  }
+  .hero-bg::after{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse at center,rgba(10,10,12,.25) 0%,rgba(10,10,12,.72) 70%,rgba(10,10,12,.96) 100%),
+      linear-gradient(180deg,rgba(10,10,12,.5) 0%,transparent 30%,transparent 60%,var(--black) 100%);
+  }
+  .hero-inner{position:relative;z-index:2;animation:rise 1.1s cubic-bezier(.2,.7,.2,1) both}
+  .hero-logo{
+    width:clamp(300px,72vw,820px);height:auto;margin:0 auto 22px;
+    display:block;
+    filter:drop-shadow(0 4px 30px rgba(0,0,0,.6));
+  }
+  .hero h1{
+    font-family:var(--display);font-weight:700;text-transform:uppercase;
+    letter-spacing:.06em;font-size:clamp(34px,7vw,80px);line-height:.98;
+  }
+  .hero h1 .accent{color:var(--red)}
+  .hero .tag{
+    font-family:var(--mono);font-weight:300;font-size:clamp(11px,1.6vw,14px);
+    letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-top:20px;
+  }
+  .scroll-cue{
+    position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:2;
+    font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--faint);display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .scroll-cue .line{width:1px;height:34px;background:linear-gradient(var(--red),transparent);animation:pulse 2s infinite}
+
+  /* ===================================================== FEATURED */
+  .featured-grid{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:42px;
+  }
+  .feat{
+    position:relative;overflow:hidden;border-radius:10px;border:.5px solid var(--line);
+    background:var(--panel);cursor:pointer;
+  }
+  .feat img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+  .feat:hover img{transform:scale(1.06)}
+  .feat::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55));opacity:0;transition:opacity .4s}
+  .feat:hover::after{opacity:1}
+  .feat .cap{
+    position:absolute;left:14px;bottom:12px;z-index:2;font-family:var(--mono);
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--white);
+    opacity:0;transform:translateY(6px);transition:.4s;
+  }
+  .feat:hover .cap{opacity:1;transform:none}
+  .feat.big{grid-column:span 4;grid-row:span 2;aspect-ratio:21/12}
+  .feat.tall{grid-column:span 2;aspect-ratio:21/13}
+  .feat.wide{grid-column:span 2;aspect-ratio:21/13}
+
+  /* ===================================================== ABOUT */
+  .about-wrap{
+    display:grid;grid-template-columns:1fr 400px;gap:54px;align-items:center;margin-top:44px;
+  }
+  .about-photo{
+    width:400px;height:480px;border-radius:12px;border:.5px solid var(--line-2);
+    background:var(--panel-2);display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--faint);
+    text-transform:uppercase;text-align:center;padding:20px;position:relative;overflow:hidden;
+  }
+  .about-photo .corner{position:absolute;width:18px;height:18px;border-color:var(--red);border-style:solid;border-width:0}
+  .about-photo .c1{top:10px;left:10px;border-top-width:1.5px;border-left-width:1.5px}
+  .about-photo .c2{top:10px;right:10px;border-top-width:1.5px;border-right-width:1.5px}
+  .about-photo .c3{bottom:10px;left:10px;border-bottom-width:1.5px;border-left-width:1.5px}
+  .about-photo .c4{bottom:10px;right:10px;border-bottom-width:1.5px;border-right-width:1.5px}
+  .about-copy p{font-size:clamp(15px,1.7vw,18px);color:var(--muted);margin-bottom:18px;max-width:62ch}
+  .about-copy p .hl{color:var(--white)}
+  .about-copy p .red{color:var(--red)}
+  .about-sign{
+    font-family:var(--display);font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    font-size:20px;color:var(--white);margin-top:6px;
+  }
+  .about-sign span{color:var(--grey);font-family:var(--mono);font-size:12px;font-weight:300;letter-spacing:.1em;text-transform:none}
+
+  /* ===================================================== GALLERY */
+  .gallery{columns:3;column-gap:14px;margin-top:42px}
+  .shot{
+    break-inside:avoid;margin-bottom:14px;position:relative;overflow:hidden;
+    border-radius:10px;border:.5px solid var(--line);background:var(--panel);cursor:pointer;
+  }
+  .shot img,.shot video{width:100%;display:block;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+  .shot:hover img,.shot:hover video{transform:scale(1.05)}
+  .shot::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.5));opacity:0;transition:.4s;pointer-events:none}
+  .shot:hover::after{opacity:1}
+  .shot .num{
+    position:absolute;top:10px;left:12px;z-index:2;font-family:var(--mono);font-size:10px;
+    letter-spacing:.2em;color:var(--white);opacity:0;transition:.4s;
+  }
+  .shot:hover .num{opacity:.85}
+  .play-icon{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
+    width:44px;height:44px;border-radius:50%;
+    background:rgba(10,10,12,.55);border:1.5px solid rgba(255,255,255,.25);
+    display:flex;align-items:center;justify-content:center;
+    pointer-events:none;transition:opacity .3s,background .3s;
+  }
+  .play-icon::after{
+    content:'';display:block;
+    border-style:solid;border-width:8px 0 8px 16px;
+    border-color:transparent transparent transparent rgba(255,255,255,.9);
+    margin-left:3px;
+  }
+  .shot:hover .play-icon{background:rgba(213,0,0,.6);border-color:rgba(213,0,0,.8)}
+  .more-slot{
+    margin-top:30px;border:1px dashed var(--line-2);border-radius:10px;padding:26px;
+    text-align:center;font-family:var(--mono);font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--faint);
+  }
+
+  /* ===================================================== CONTACT */
+  .contact-wrap{display:flex;justify-content:center;margin-top:42px}
+  .card-stage{
+    position:relative;width:min(620px,100%);aspect-ratio:1904/1088;
+    border-radius:16px;overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.55);
+  }
+  .card-img{width:100%;height:100%;object-fit:cover;display:block}
+  .hot-overlay{
+    position:absolute;inset:0;width:100%;height:100%;
+    pointer-events:none;
+  }
+  .hot-shape{
+    pointer-events:all;cursor:pointer;
+    animation:shapeglow 3s ease-in-out infinite;
+    animation-fill-mode:both;
+  }
+  .hot-shape.s-mail{animation-delay:1s}
+  .hot-shape.s-linkedin{animation-delay:2s}
+  @keyframes shapeglow{
+    0%,33%,100%{opacity:.1}
+    15%,25%{opacity:.85}
+  }
+  .hot-shape:hover{animation:none;opacity:1}
+  .contact-note{
+    text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint);margin-top:24px;
+  }
+
+  /* ===================================================== FOOTER */
+  footer{border-top:.5px solid var(--line);padding:54px 24px 40px;text-align:center}
+  .foot-sub{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint)}
+
+  /* ===================================================== LIGHTBOX */
+  .lb{
+    position:fixed;inset:0;z-index:100;background:rgba(5,5,7,.94);
+    display:none;align-items:center;justify-content:center;padding:30px;
+    opacity:0;transition:opacity .3s;
+  }
+  .lb.open{display:flex;opacity:1}
+  .lb img,.lb video{
+    max-width:92vw;max-height:88vh;border-radius:8px;border:.5px solid var(--line-2);
+  }
+  .lb-close{
+    position:absolute;top:22px;right:26px;font-family:var(--mono);font-size:13px;
+    letter-spacing:.1em;color:var(--muted);border:.5px solid var(--line-2);
+    border-radius:30px;padding:8px 16px;cursor:pointer;text-transform:uppercase;transition:.25s;
+  }
+  .lb-close:hover{color:var(--white);border-color:var(--red)}
+  .lb-nav{
+    position:absolute;top:50%;transform:translateY(-50%);font-family:var(--mono);
+    font-size:24px;color:var(--muted);cursor:pointer;padding:20px;user-select:none;transition:.2s;
+  }
+  .lb-nav:hover{color:var(--red)}
+  .lb-prev{left:8px}.lb-next{right:8px}
+
+  /* ===================================================== ANIM */
+  @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* hero logo gentle float */
+  .hero-logo{animation:rise 1.1s cubic-bezier(.2,.7,.2,1) both,float 5s ease-in-out 1.3s infinite}
+
+  /* eyebrow wipe-in */
+  .eyebrow{clip-path:inset(0 100% 0 0);transition:clip-path .9s cubic-bezier(.4,0,.2,1) .05s}
+  .reveal.in .eyebrow{clip-path:inset(0 0% 0 0)}
+
+  /* section title word-by-word */
+  .section-title .word{
+    display:inline;opacity:0;
+    transition:opacity .65s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in .section-title .word{opacity:1}
+
+  /* featured card stagger */
+  .feat{
+    opacity:0;transform:translateY(22px);
+    transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);
+  }
+  .feat.in{opacity:1;transform:none}
+
+  /* gallery shot stagger */
+  .shot{
+    opacity:0;transform:translateY(18px);
+    transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1);
+  }
+  .shot.in{opacity:1;transform:none}
+
+  /* about columns slide from sides */
+  .about-photo{
+    opacity:0;transform:translateX(30px);
+    transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in .about-photo{opacity:1;transform:none}
+  .about-copy{
+    opacity:0;transform:translateX(-30px);
+    transition:opacity .9s cubic-bezier(.2,.7,.2,1) .18s,transform .9s cubic-bezier(.2,.7,.2,1) .18s;
+  }
+  .reveal.in .about-copy{opacity:1;transform:none}
+
+  /* HUD line draw */
+  .hud-rule path{
+    stroke-dasharray:1100;stroke-dashoffset:1100;
+    transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1);
+  }
+  .hud-rule.drawn path{stroke-dashoffset:0}
+
+  /* ===================================================== RESPONSIVE */
+  @media(max-width:900px){
+    .featured-grid{grid-template-columns:repeat(2,1fr)}
+    .feat.big{grid-column:span 2;grid-row:span 1;aspect-ratio:21/11}
+    .feat.tall,.feat.wide{grid-column:span 1}
+    .about-wrap{grid-template-columns:1fr;gap:30px;justify-items:center;text-align:center}
+    .about-photo{width:100%;max-width:400px;order:2}
+    .about-copy{order:1}
+    .about-copy p{text-align:left}
+    .gallery{columns:2}
+    .section{padding:64px 18px}
+  }
+  @media(max-width:560px){
+    .gallery{columns:1}
+    .featured-grid{grid-template-columns:1fr}
+    .feat.big,.feat.tall,.feat.wide{grid-column:span 1;aspect-ratio:21/12}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto}
+    .reveal,.feat,.shot,.about-photo,.about-copy{opacity:1;transform:none}
+    .section-title .word{opacity:1}
+    .eyebrow{clip-path:none}
+    .hud-rule path{stroke-dashoffset:0}
+    .hot-shape{animation:none;opacity:.5}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================ HERO ============================ -->
+<header class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <img class="hero-logo" src="elements/BRP lounge.svg" alt="Welcome to the BRP Lounge">
+    <p class="tag">Because every car has something to say</p>
+  </div>
+  <div class="scroll-cue"><span>Scroll</span><span class="line"></span></div>
+</header>
+
+<!-- ============================ FEATURED ============================ -->
+<section class="section reveal">
+  <div class="eyebrow">Selected work</div>
+  <h2 class="section-title">The highlight reel</h2>
+  <div class="featured-grid">
+    <figure class="feat big"   data-full="renders/21 9 fixed.jpg"><img src="renders/21 9 fixed.jpg" alt="Twin 488s, forest golden hour"><figcaption class="cap">Golden hour · twin study</figcaption></figure>
+    <figure class="feat tall"  data-full="renders/SF90 4.jpg"><img src="renders/SF90 4.jpg" alt="SF90 studio, low key"><figcaption class="cap">Studio · low key</figcaption></figure>
+    <figure class="feat wide"  data-full="renders/488Poster.jpg"><img src="renders/488Poster.jpg" alt="488 Spider, wetland dusk"><figcaption class="cap">Open top · clearing</figcaption></figure>
+    <figure class="feat tall"  data-full="renders/Tourbillion.jpg"><img src="renders/Tourbillion.jpg" alt="Tourbillon, forest golden hour"><figcaption class="cap">Forest · golden hour</figcaption></figure>
+    <figure class="feat wide"  data-full="renders/Burnout 3.jpg"><img src="renders/Burnout 3.jpg" alt="SF90 burnout, smoke"><figcaption class="cap">Smoke · signature</figcaption></figure>
+  </div>
+</section>
+
+<svg class="hud-rule" viewBox="0 0 760 22" fill="none"><path d="M2 11h150l14-7h180l10 7h188l10-7h180l14 7h0" stroke="#777" stroke-width="1" opacity=".5"/></svg>
+
+<!-- ============================ ABOUT ============================ -->
+<section class="section reveal">
+  <div class="eyebrow">The brain behind</div>
+  <h2 class="section-title">Calm by default,<br>loud in design</h2>
+  <div class="about-wrap">
+    <div class="about-copy">
+      <p>Bhupender Raj Purohit. <span class="hl">Hrithic</span>, if that's easier. Designer by degree, dreamer by DNA.</p>
+      <p>I got into 3D to bring my car ideas to life — <span class="hl">exactly</span> how I imagine them. Five-plus years later, these renders are where that obsession lives. Cars have shaped my story since childhood.</p>
+      <p>I don't do generic. <span class="red">I do specific.</span> This isn't a business. It's a personal flex — a place to show what I build for the love of it.</p>
+      <div class="about-sign">BRP Specific <span>— if you know, you park it</span></div>
+    </div>
+    <div class="about-photo">
+      <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+      <img src="renders/portrait.png" alt="Bhupender Raj Purohit" style="width:100%;height:100%;object-fit:cover;">
+    </div>
+  </div>
+</section>
+
+<svg class="hud-rule" viewBox="0 0 760 22" fill="none"><path d="M2 11h150l14-7h180l10 7h188l10-7h180l14 7h0" stroke="#777" stroke-width="1" opacity=".5"/></svg>
+
+<!-- ============================ GALLERY ============================ -->
+<section class="section reveal">
+  <div class="eyebrow">The gallery</div>
+  <h2 class="section-title">Every frame, on the wall</h2>
+  <div class="gallery" id="gallery">
+    <figure class="shot" data-full="renders/SF90 5.jpg"><img src="renders/SF90 5.jpg" alt="Render"><figcaption class="num">01</figcaption></figure>
+    <figure class="shot" data-full="renders/SF90 1.jpg"><img src="renders/SF90 1.jpg" alt="Render"><figcaption class="num">02</figcaption></figure>
+    <figure class="shot" data-full="renders/Apocalypse SVJ.jpg"><img src="renders/Apocalypse SVJ.jpg" alt="Render"><figcaption class="num">03</figcaption></figure>
+    <figure class="shot" data-full="renders/SF90 3.jpg"><img src="renders/SF90 3.jpg" alt="Render"><figcaption class="num">04</figcaption></figure>
+    <figure class="shot" data-full="renders/SF90 Burnout.png"><img src="renders/SF90 Burnout.png" alt="Render"><figcaption class="num">05</figcaption></figure>
+    <figure class="shot" data-full="renders/SF90 2.jpg"><img src="renders/SF90 2.jpg" alt="Render"><figcaption class="num">06</figcaption></figure>
+    <figure class="shot" data-full="renders/488Poster.jpg"><img src="renders/488Poster.jpg" alt="Render"><figcaption class="num">07</figcaption></figure>
+    <figure class="shot" data-full="renders/SF90 4.jpg"><img src="renders/SF90 4.jpg" alt="Render"><figcaption class="num">08</figcaption></figure>
+    <figure class="shot" data-full="renders/1.jpg"><img src="renders/1.jpg" alt="Render"><figcaption class="num">09</figcaption></figure>
+    <figure class="shot" data-full="renders/812C.mp4" data-type="video"><video src="renders/812C.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">10</figcaption></figure>
+    <figure class="shot" data-full="renders/BRP Specific Victor.mp4" data-type="video"><video src="renders/BRP Specific Victor.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">11</figcaption></figure>
+    <figure class="shot" data-full="renders/BMW M3 GTR.mp4" data-type="video"><video src="renders/BMW M3 GTR.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">12</figcaption></figure>
+    <figure class="shot" data-full="renders/Huracan Evo Widebody 2 YT_1.mp4" data-type="video"><video src="renders/Huracan Evo Widebody 2 YT_1.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">13</figcaption></figure>
+    <figure class="shot" data-full="renders/Lambo in Gas Station.mp4" data-type="video"><video src="renders/Lambo in Gas Station.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">14</figcaption></figure>
+    <figure class="shot" data-full="renders/Sequence_McLaren.mp4" data-type="video"><video src="renders/Sequence_McLaren.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">15</figcaption></figure>
+    <figure class="shot" data-full="renders/BMW 740i with audio.mp4" data-type="video"><video src="renders/BMW 740i with audio.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">16</figcaption></figure>
+    <figure class="shot" data-full="renders/Sterrato with audio.mp4" data-type="video"><video src="renders/Sterrato with audio.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">17</figcaption></figure>
+    <figure class="shot" data-full="renders/2022 wrap-up.mp4" data-type="video"><video src="renders/2022 wrap-up.mp4" muted playsinline preload="metadata"></video><span class="play-icon"></span><figcaption class="num">18</figcaption></figure>
+  </div>
+  <div class="more-slot">More renders incoming — this wall keeps growing</div>
+</section>
+
+<svg class="hud-rule" viewBox="0 0 760 22" fill="none"><path d="M2 11h150l14-7h180l10 7h188l10-7h180l14 7h0" stroke="#777" stroke-width="1" opacity=".5"/></svg>
+
+<!-- ============================ CONTACT ============================ -->
+<section class="section reveal">
+  <div class="eyebrow">Connect</div>
+  <h2 class="section-title">Say less. Say hello.</h2>
+  <div class="contact-wrap">
+    <div class="card-stage">
+      <img class="card-img" src="elements/DVC.svg" alt="BRP Specific — Bhupender Rajpurohit visiting card">
+      <svg class="hot-overlay" viewBox="0 0 1904 1088" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="sglow" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="38" result="blur"/>
+            <feFlood flood-color="#D50000" flood-opacity="1" result="color"/>
+            <feComposite in="color" in2="blur" operator="in" result="glow"/>
+            <feMerge><feMergeNode in="glow"/><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <a href="https://www.instagram.com/brp_specific" target="_blank" rel="noopener" aria-label="Instagram">
+          <rect class="hot-shape s-insta" x="894" y="569" width="152" height="150" rx="45"
+            fill="rgba(213,0,0,0.07)" stroke="rgba(213,0,0,0.85)" stroke-width="3" filter="url(#sglow)"/>
+        </a>
+        <a href="mailto:brpdesigndna@gmail.com" aria-label="Email">
+          <rect class="hot-shape s-mail" x="1207" y="567" width="176" height="146" rx="35"
+            fill="rgba(213,0,0,0.07)" stroke="rgba(213,0,0,0.85)" stroke-width="3" filter="url(#sglow)"/>
+        </a>
+        <a href="https://www.linkedin.com/in/bhupender-rajpurohit-693491208" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <rect class="hot-shape s-linkedin" x="1548" y="569" width="146" height="142" rx="15"
+            fill="rgba(213,0,0,0.07)" stroke="rgba(213,0,0,0.85)" stroke-width="3" filter="url(#sglow)"/>
+        </a>
+      </svg>
+    </div>
+  </div>
+  <p class="contact-note">Tap the icons to connect</p>
+</section>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <div class="foot-sub">BRP Specific · © 2026</div>
+</footer>
+
+<!-- ============================ LIGHTBOX ============================ -->
+<div class="lb" id="lightbox">
+  <div class="lb-close" id="lbClose">Close ✕</div>
+  <div class="lb-nav lb-prev" id="lbPrev">‹</div>
+  <img id="lbImg" src="" alt="Enlarged render">
+  <video id="lbVid" controls style="display:none"></video>
+  <div class="lb-nav lb-next" id="lbNext">›</div>
+</div>
+
+<script>
+  /* ---------- scroll reveal ---------- */
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* ---------- hero parallax ---------- */
+  const heroBg=document.querySelector('.hero-bg');
+  window.addEventListener('scroll',()=>{
+    heroBg.style.transform=`scale(1.04) translateY(${window.scrollY*.22}px)`;
+  },{passive:true});
+
+  /* ---------- section title word split ---------- */
+  document.querySelectorAll('.section-title').forEach(h=>{
+    let wi=0;
+    h.innerHTML=h.innerHTML.replace(/(<[^>]*>)|(\S+)/g,(m,tag,word)=>{
+      if(tag)return tag;
+      return `<span class="word" style="transition-delay:${.12+wi++*.13}s">${word}</span>`;
+    });
+  });
+
+  /* ---------- staggered card entrances ---------- */
+  const cardIO=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting)return;
+      [...e.target.querySelectorAll('.feat,.shot')].forEach((c,i)=>{
+        setTimeout(()=>c.classList.add('in'),i*65);
+      });
+      cardIO.unobserve(e.target);
+    });
+  },{threshold:.04});
+  document.querySelectorAll('.featured-grid,.gallery').forEach(el=>cardIO.observe(el));
+
+  /* ---------- HUD line draw ---------- */
+  const hudIO=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('drawn');hudIO.unobserve(e.target)}});
+  },{threshold:.5});
+  document.querySelectorAll('.hud-rule').forEach(el=>hudIO.observe(el));
+
+  /* ---------- lightbox ---------- */
+  const lb=document.getElementById('lightbox');
+  const lbImg=document.getElementById('lbImg');
+  const lbVid=document.getElementById('lbVid');
+  const items=[...document.querySelectorAll('[data-full]')];
+  const srcs=items.map(i=>i.dataset.full);
+  const types=items.map(i=>i.dataset.type||'image');
+  let idx=0;
+
+  function isVid(i){return types[i]==='video'}
+
+  function show(i){
+    if(isVid(i)){
+      lbImg.style.display='none';
+      lbVid.style.display='block';
+      lbVid.src=srcs[i];
+      lbVid.play();
+    } else {
+      lbVid.pause();lbVid.src='';
+      lbVid.style.display='none';
+      lbImg.style.display='block';
+      lbImg.src=srcs[i];
+    }
+  }
+
+  function open(i){idx=i;show(idx);lb.classList.add('open');document.body.style.overflow='hidden'}
+  function close(){lb.classList.remove('open');document.body.style.overflow='';lbVid.pause();lbVid.src=''}
+  function go(d){idx=(idx+d+srcs.length)%srcs.length;show(idx)}
+
+  items.forEach((it,i)=>it.addEventListener('click',()=>open(i)));
+  document.getElementById('lbClose').addEventListener('click',close);
+  document.getElementById('lbPrev').addEventListener('click',e=>{e.stopPropagation();go(-1)});
+  document.getElementById('lbNext').addEventListener('click',e=>{e.stopPropagation();go(1)});
+  lb.addEventListener('click',e=>{if(e.target===lb)close()});
+  document.addEventListener('keydown',e=>{
+    if(!lb.classList.contains('open'))return;
+    if(e.key==='Escape')close();
+    if(e.key==='ArrowLeft')go(-1);
+    if(e.key==='ArrowRight')go(1);
+  });
+</script>
+</body>
+</html>

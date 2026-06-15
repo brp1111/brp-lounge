@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\" -Recurse | Where-Object { $_.Extension -match '\\\\.\\(ttf|otf|woff|woff2|svg\\)' } | Select-Object FullName, Length)",
+      "PowerShell(Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing; [System.Windows.Forms.Screen]::PrimaryScreen.Bounds)",
+      "PowerShell(cd \"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\"; Start-Process powershell -ArgumentList '-NoExit', '-Command', 'cd \"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\"; npx serve . -l 3000' -WindowStyle Normal)",
+      "PowerShell(Start-Sleep -Seconds 4; Invoke-WebRequest -Uri \"http://localhost:3000/index_1.html\" -UseBasicParsing -TimeoutSec 5 | Select-Object -ExpandProperty StatusCode)",
+      "PowerShell(Rename-Item *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\" -Recurse -File | Select-Object @{N='Path';E={$_.FullName.Replace\\(\"C:\\\\Users\\\\USER\\\\Desktop\\\\brp lounge\\\\\",\"\"\\)}} | Sort-Object Path)",
+      "PowerShell(gh *)",
+      "PowerShell(winget *)",
+      "PowerShell(git *)"
+    ]
+  }
+}
