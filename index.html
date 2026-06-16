@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The BRP Lounge — Bhupender Raj Purohit</title>
-<link rel="preload" as="image" href="renders/1.jpg">
+<title>The BRP Lounge — Bhupender Rajpurohit</title>
+<link rel="preload" as="image" href="renders/1.jpg" media="(min-width:561px)">
+<link rel="preload" as="image" href="renders/488 PS S23U.jpg" media="(max-width:560px)">
 <style>
   @font-face{
     font-family:'Conthrax';
@@ -330,8 +331,11 @@
     .gallery{columns:2;column-gap:8px}
     .featured-grid{grid-template-columns:1fr}
     .feat.big,.feat.tall,.feat.wide{grid-column:span 1;aspect-ratio:21/12}
-    .hero{min-height:56vw}
-    .hero-bg{background-size:cover;background-position:center center;transform:none!important}
+    .hero{min-height:100vh}
+    .hero-bg{
+      background-size:cover;background-position:center center;transform:none!important;
+      background-image:url('renders/488 PS S23U.jpg');
+    }
     /* snappier reveal on mobile */
     .reveal{transition-duration:.45s}
     .about-photo{transition-duration:.55s}
@@ -368,7 +372,7 @@
 <!-- ============================ FEATURED ============================ -->
 <section class="section reveal">
   <div class="eyebrow">Selected work</div>
-  <h2 class="section-title">The highlight reel</h2>
+  <h2 class="section-title">Worth the park</h2>
   <div class="featured-grid">
     <figure class="feat big"   data-full="renders/21 9 fixed.jpg"><img src="renders/21 9 fixed.jpg" alt="Twin 488s, forest golden hour"><figcaption class="cap">Golden hour · twin study</figcaption></figure>
     <figure class="feat tall"  data-full="renders/SF90 4.jpg"><img src="renders/SF90 4.jpg" alt="SF90 studio, low key"><figcaption class="cap">Studio · low key</figcaption></figure>
@@ -386,14 +390,14 @@
   <h2 class="section-title">Calm by default,<br>loud in design</h2>
   <div class="about-wrap">
     <div class="about-copy">
-      <p>Bhupender Raj Purohit. <span class="hl">Hrithic</span>, if that's easier. Designer by degree, dreamer by DNA.</p>
+      <p>Bhupender Rajpurohit. <span class="hl">Hrithic</span>, if that's easier. Designer by degree, dreamer by DNA.</p>
       <p>I got into 3D to bring my car ideas to life — <span class="hl">exactly</span> how I imagine them. Five-plus years later, these renders are where that obsession lives. Cars have shaped my story since childhood.</p>
       <p>I don't do generic. <span class="red">I do specific.</span> This isn't a business. It's a personal flex — a place to show what I build for the love of it.</p>
       <div class="about-sign">BRP Specific <span>— if you know, you park it</span></div>
     </div>
     <div class="about-photo">
       <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
-      <img src="renders/portrait.png" alt="Bhupender Raj Purohit" style="width:100%;height:100%;object-fit:cover;">
+      <img src="renders/portrait.png" alt="Bhupender Rajpurohit" style="width:100%;height:100%;object-fit:cover;">
     </div>
   </div>
 </section>
@@ -587,10 +591,18 @@
     }
   });
 
-  /* swipe down to close */
-  let tsY=0;
-  lb.addEventListener('touchstart',e=>{tsY=e.touches[0].clientY},{passive:true});
-  lb.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-tsY>80)close()},{passive:true});
+  /* swipe left/right to navigate, swipe down to close */
+  let tsX=0,tsY=0;
+  lb.addEventListener('touchstart',e=>{tsX=e.touches[0].clientX;tsY=e.touches[0].clientY},{passive:true});
+  lb.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tsX;
+    const dy=e.changedTouches[0].clientY-tsY;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){
+      go(dx<0?1:-1);
+    } else if(dy>80){
+      close();
+    }
+  },{passive:true});
 
   items.forEach((it,i)=>it.addEventListener('click',()=>open(i)));
   document.getElementById('lbClose').addEventListener('click',close);
