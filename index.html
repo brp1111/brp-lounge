@@ -6,6 +6,9 @@
 <title>The BRP Lounge — Bhupender Rajpurohit</title>
 <link rel="preload" as="image" href="renders/1.jpg" media="(min-width:561px)">
 <link rel="preload" as="image" href="renders/488 PS S23U.jpg" media="(max-width:560px)">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
 <style>
   @font-face{
     font-family:'Conthrax';
@@ -50,6 +53,7 @@
     overflow-x:hidden;
     -webkit-font-smoothing:antialiased;
   }
+  #bg3d{position:fixed;inset:0;z-index:0;pointer-events:none;display:block;width:100%;height:100%}
   img{display:block;max-width:100%;-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none}
   video{-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none}
   .shot img,.shot video,.feat img,#lbImg,#lbVid,.about-photo img{pointer-events:none}
@@ -62,7 +66,7 @@
   }
 
   /* ---------- shared section frame ---------- */
-  .section{padding:90px 24px;max-width:1280px;margin:0 auto}
+  .section{padding:90px 24px;max-width:1280px;margin:0 auto;position:relative;z-index:1}
   .eyebrow{
     font-family:var(--mono);font-size:11px;letter-spacing:.34em;
     text-transform:uppercase;color:var(--red);margin-bottom:14px;
@@ -80,10 +84,11 @@
     padding:24px;overflow:hidden;
   }
   .hero-bg{
-    position:absolute;inset:0;
+    position:absolute;inset:0;z-index:-1;
     background:#000 center/cover no-repeat;
     background-image:url('renders/1.jpg');
     transform:scale(1.04);
+    opacity:.45;
   }
   .hero-bg::after{
     content:"";position:absolute;inset:0;
@@ -226,7 +231,7 @@
   }
 
   /* ===================================================== FOOTER */
-  footer{border-top:.5px solid var(--line);padding:54px 24px 40px;text-align:center}
+  footer{border-top:.5px solid var(--line);padding:54px 24px 40px;text-align:center;position:relative;z-index:1}
   .foot-sub{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint)}
 
   /* ===================================================== LIGHTBOX */
@@ -348,6 +353,8 @@
     .shot:active,.feat:active{filter:brightness(1.15);transition:filter .08s}
   }
   @media(prefers-reduced-motion:reduce){
+    #bg3d{display:none}
+    .hero-bg{opacity:1}
     *{animation:none!important;transition:none!important;scroll-behavior:auto}
     .reveal,.feat,.shot,.about-photo,.about-copy{opacity:1;transform:none}
     .section-title .word{opacity:1}
@@ -358,6 +365,8 @@
 </style>
 </head>
 <body>
+
+<canvas id="bg3d" aria-hidden="true"></canvas>
 
 <!-- ============================ HERO ============================ -->
 <header class="hero" id="top">
@@ -506,6 +515,223 @@
   <video id="lbVid" controls style="display:none"></video>
   <div class="lb-nav lb-next" id="lbNext">›</div>
 </div>
+
+<!-- ============================ 3D BACKDROP ============================ -->
+<!-- inlined (not an external src) so it still runs when this file is opened
+     directly via file:// — module scripts loaded via src are blocked by CORS
+     in that case, but an inline module importing from the CDN is allowed. -->
+<script type="module">
+  /* ============================================================
+     BRP Lounge — ambient scroll-driven 3D backdrop (three.js)
+     Procedural only: wireframe grid + drifting wireframe primitives
+     + drifting particle field. No models, no lighting, no postfx —
+     kept deliberately cheap so it never competes with the renders.
+     ============================================================ */
+  import * as THREE from 'three';
+
+  const canvas3d = document.getElementById('bg3d');
+  const prefersReduced3d = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (canvas3d && !prefersReduced3d) {
+    if (document.readyState === 'complete') start3d();
+    else window.addEventListener('load', start3d, { once: true });
+  }
+
+  function start3d() {
+    const mob3d = window.innerWidth <= 560;
+    const tablet3d = window.innerWidth <= 900;
+
+    /* ---------- renderer / scene / camera ---------- */
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mob3d ? 1.25 : 1.5));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0a0a0c, 0.032);
+
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
+
+    /* ---------- grid floor ---------- */
+    const gridSize = mob3d ? 70 : 130;
+    const gridDivisions = mob3d ? 18 : 38;
+    const grid = new THREE.GridHelper(gridSize, gridDivisions, 0xd50000, 0x35363c);
+    grid.position.y = -6;
+    grid.material.transparent = true;
+    grid.material.opacity = 0.32;
+    scene.add(grid);
+
+    /* ---------- horizon glow (vanishing-point beacon) ---------- */
+    const glowCanvas = document.createElement('canvas');
+    glowCanvas.width = glowCanvas.height = 128;
+    const glowCtx = glowCanvas.getContext('2d');
+    const glowGrad = glowCtx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    glowGrad.addColorStop(0, 'rgba(213,0,0,0.55)');
+    glowGrad.addColorStop(0.35, 'rgba(213,0,0,0.16)');
+    glowGrad.addColorStop(1, 'rgba(213,0,0,0)');
+    glowCtx.fillStyle = glowGrad;
+    glowCtx.fillRect(0, 0, 128, 128);
+    const glowMat = new THREE.SpriteMaterial({
+      map: new THREE.CanvasTexture(glowCanvas),
+      transparent: true,
+      depthWrite: false,
+      fog: false,
+      blending: THREE.AdditiveBlending,
+      opacity: 0.3,
+    });
+    const glow = new THREE.Sprite(glowMat);
+    glow.scale.set(26, 26, 1);
+    glow.position.set(0, -1, -(gridSize / 2 + 18));
+    scene.add(glow);
+
+    /* ---------- drifting wireframe primitives ---------- */
+    const shapesGroup = new THREE.Group();
+    const shapeCount = mob3d ? 2 : tablet3d ? 3 : 5;
+    const geoFactories = [
+      () => new THREE.IcosahedronGeometry(1.5, 0),
+      () => new THREE.DodecahedronGeometry(1.3, 0),
+      () => new THREE.OctahedronGeometry(1.7, 0),
+    ];
+    for (let i = 0; i < shapeCount; i++) {
+      const geo = geoFactories[i % geoFactories.length]();
+      const edges = new THREE.EdgesGeometry(geo);
+      const mat = new THREE.LineBasicMaterial({
+        color: i % 2 === 0 ? 0xd50000 : 0xf4f4f5,
+        transparent: true,
+        opacity: 0.5,
+      });
+      const mesh = new THREE.LineSegments(edges, mat);
+      const side = Math.random() < 0.5 ? -1 : 1;
+      mesh.position.set(
+        side * (4 + Math.random() * 14), // keep clear of the centered logo/copy column
+        Math.random() * 5 + 1,
+        -8 - Math.random() * 46
+      );
+      mesh.userData.spin = (Math.random() * 0.18 + 0.04) * (Math.random() < 0.5 ? -1 : 1);
+      shapesGroup.add(mesh);
+      geo.dispose();
+    }
+    scene.add(shapesGroup);
+
+    /* ---------- particle streaks ---------- */
+    const particleCount = mob3d ? 110 : tablet3d ? 220 : 360;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 60;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 28;
+      positions[i * 3 + 2] = Math.random() * -120;
+    }
+    const particleGeo = new THREE.BufferGeometry();
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particleMat = new THREE.PointsMaterial({
+      color: 0xf4f4f5,
+      size: mob3d ? 0.05 : 0.07,
+      transparent: true,
+      opacity: 0.45,
+    });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+
+    /* ---------- scroll waypoints ---------- */
+    const sectionEls = Array.from(document.querySelectorAll('.section'));
+    const waypointEls = [document.getElementById('top'), ...sectionEls, document.querySelector('footer')].filter(Boolean);
+
+    const camKeys = [
+      { pos: [0, 1.1, 6], look: [0, 1, -4] },     // hero
+      { pos: [3, 2.4, 1], look: [0, 1.2, -10] },  // featured
+      { pos: [-3, 3, -3], look: [0, 1.5, -16] },  // about
+      { pos: [2.5, 4, -9], look: [0, 1.6, -24] }, // gallery
+      { pos: [-2, 4.6, -15], look: [0, 1.6, -30] },// extras
+      { pos: [0, 2.2, -19], look: [0, 1.1, -27] }, // contact
+      { pos: [0, 1.6, -21], look: [0, 1, -29] },   // footer
+    ].slice(0, waypointEls.length);
+
+    let boundaries = [];
+    function computeBoundaries() {
+      boundaries = waypointEls.map((el) => el.offsetTop);
+    }
+    computeBoundaries();
+
+    function getCamTarget(scrollY) {
+      let i = 0;
+      for (; i < boundaries.length - 1; i++) {
+        if (scrollY < boundaries[i + 1]) break;
+      }
+      const segStart = boundaries[i];
+      const segEnd = boundaries[i + 1] ?? segStart + window.innerHeight;
+      const t = THREE.MathUtils.clamp((scrollY - segStart) / Math.max(1, segEnd - segStart), 0, 1);
+      const a = camKeys[i];
+      const b = camKeys[Math.min(i + 1, camKeys.length - 1)];
+      return {
+        pos: a.pos.map((v, idx) => THREE.MathUtils.lerp(v, b.pos[idx], t)),
+        look: a.look.map((v, idx) => THREE.MathUtils.lerp(v, b.look[idx], t)),
+      };
+    }
+
+    /* ---------- mouse parallax (subtle, capped) ---------- */
+    let mouseX = 0, mouseY = 0;
+    if (!mob3d) {
+      window.addEventListener(
+        'mousemove',
+        (e) => {
+          mouseX = e.clientX / window.innerWidth - 0.5;
+          mouseY = e.clientY / window.innerHeight - 0.5;
+        },
+        { passive: true }
+      );
+    }
+
+    /* ---------- scroll + resize ---------- */
+    let targetScroll = window.scrollY;
+    window.addEventListener('scroll', () => { targetScroll = window.scrollY; }, { passive: true });
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      computeBoundaries();
+    });
+
+    /* ---------- render loop ---------- */
+    const curPos = new THREE.Vector3(...camKeys[0].pos);
+    const curLook = new THREE.Vector3(...camKeys[0].look);
+    const tmpPos = new THREE.Vector3();
+    const tmpLook = new THREE.Vector3();
+    const clock = new THREE.Clock();
+
+    let running = true;
+    document.addEventListener('visibilitychange', () => {
+      const wasHidden = !running;
+      running = !document.hidden;
+      if (running && wasHidden) {
+        clock.getDelta(); // discard the gap so shapes don't jump
+        requestAnimationFrame(tick);
+      }
+    });
+
+    function tick() {
+      if (!running) return;
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const { pos, look } = getCamTarget(targetScroll);
+      tmpPos.set(pos[0] + mouseX * 0.6, pos[1] - mouseY * 0.3, pos[2]);
+      tmpLook.set(look[0] + mouseX * 0.3, look[1] - mouseY * 0.15, look[2]);
+      curPos.lerp(tmpPos, 0.06);
+      curLook.lerp(tmpLook, 0.06);
+      camera.position.copy(curPos);
+      camera.lookAt(curLook);
+
+      shapesGroup.children.forEach((m) => {
+        m.rotation.x += m.userData.spin * dt;
+        m.rotation.y += m.userData.spin * 0.7 * dt;
+      });
+
+      particles.position.z += dt * 1.1;
+      if (particles.position.z > 40) particles.position.z = 0;
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+</script>
 
 <script>
   /* ---------- scroll reveal ---------- */
