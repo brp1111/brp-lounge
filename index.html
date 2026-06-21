@@ -362,6 +362,60 @@
     .hud-rule path{stroke-dashoffset:0}
     .hot-shape{animation:none;opacity:.5}
   }
+
+  /* ===================================================== NAV BALL */
+  #navBall{
+    position:fixed;bottom:28px;right:28px;
+    display:flex;align-items:center;gap:12px;
+    z-index:50;
+  }
+  .nav-ball-wrap{
+    position:relative;width:90px;height:90px;
+    flex-shrink:0;cursor:grab;touch-action:none;
+  }
+  .nav-ball-wrap:active{cursor:grabbing}
+  #navBallCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .nav-ball-ring{
+    position:absolute;inset:-4px;border-radius:50%;
+    border:.5px solid rgba(213,0,0,.22);pointer-events:none;
+    animation:ballring 3s ease-in-out infinite;
+  }
+  @keyframes ballring{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.06);opacity:.65}}
+  .nav-drag-hint{
+    position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:8px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--faint);pointer-events:none;white-space:nowrap;
+    transition:opacity .25s;
+  }
+  #navBall:hover .nav-drag-hint{opacity:0}
+  .nav-links{
+    display:flex;flex-direction:column;gap:6px;align-items:flex-end;
+    opacity:0;transform:translateX(10px);
+    transition:opacity .3s cubic-bezier(.2,.7,.2,1),transform .3s cubic-bezier(.2,.7,.2,1);
+    pointer-events:none;
+  }
+  #navBall:hover .nav-links{opacity:1;transform:none;pointer-events:all}
+  .nav-lbl{
+    font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--muted);white-space:nowrap;
+    padding:5px 11px;
+    border:.5px solid var(--line-2);border-radius:20px;
+    background:rgba(10,10,12,.9);
+    text-decoration:none;display:block;
+    transition:color .2s,border-color .2s,background .2s;
+  }
+  .nav-lbl:hover{color:var(--white);border-color:rgba(213,0,0,.6);background:rgba(213,0,0,.07)}
+  .nav-lbl.active{color:var(--red);border-color:rgba(213,0,0,.45)}
+  .nav-links .nav-lbl:nth-child(1){transition-delay:.0s}
+  .nav-links .nav-lbl:nth-child(2){transition-delay:.05s}
+  .nav-links .nav-lbl:nth-child(3){transition-delay:.10s}
+  .nav-links .nav-lbl:nth-child(4){transition-delay:.15s}
+  @media(max-width:560px){
+    #navBall{bottom:16px;right:16px}
+    .nav-ball-wrap{width:64px;height:64px}
+    .nav-links,.nav-drag-hint{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){#navBall{display:none}}
 </style>
 </head>
 <body>
@@ -379,7 +433,7 @@
 </header>
 
 <!-- ============================ FEATURED ============================ -->
-<section class="section reveal">
+<section class="section reveal" id="work">
   <div class="eyebrow">Selected work</div>
   <h2 class="section-title">Worth the park</h2>
   <div class="featured-grid">
@@ -394,7 +448,7 @@
 <svg class="hud-rule" viewBox="0 0 760 22" fill="none"><path d="M2 11h150l14-7h180l10 7h188l10-7h180l14 7h0" stroke="#777" stroke-width="1" opacity=".5"/></svg>
 
 <!-- ============================ ABOUT ============================ -->
-<section class="section reveal">
+<section class="section reveal" id="about">
   <div class="eyebrow">The brain behind</div>
   <h2 class="section-title">Calm by default,<br>loud in design</h2>
   <div class="about-wrap">
@@ -414,10 +468,10 @@
 <svg class="hud-rule" viewBox="0 0 760 22" fill="none"><path d="M2 11h150l14-7h180l10 7h188l10-7h180l14 7h0" stroke="#777" stroke-width="1" opacity=".5"/></svg>
 
 <!-- ============================ GALLERY ============================ -->
-<section class="section reveal">
+<section class="section reveal" id="gallery">
   <div class="eyebrow">The gallery</div>
   <h2 class="section-title">Gallery</h2>
-  <div class="gallery" id="gallery">
+  <div class="gallery">
     <figure class="shot" data-full="renders/SF90 5.jpg"><img src="renders/SF90 5.jpg" alt="Render"><figcaption class="num">01</figcaption></figure>
     <figure class="shot" data-full="renders/SF90 1.jpg"><img src="renders/SF90 1.jpg" alt="Render"><figcaption class="num">02</figcaption></figure>
     <figure class="shot" data-full="renders/Apocalypse SVJ.jpg"><img src="renders/Apocalypse SVJ.jpg" alt="Render"><figcaption class="num">03</figcaption></figure>
@@ -469,7 +523,7 @@
 <svg class="hud-rule" viewBox="0 0 760 22" fill="none"><path d="M2 11h150l14-7h180l10 7h188l10-7h180l14 7h0" stroke="#777" stroke-width="1" opacity=".5"/></svg>
 
 <!-- ============================ CONTACT ============================ -->
-<section class="section reveal">
+<section class="section reveal" id="contact">
   <div class="eyebrow">Connect</div>
   <h2 class="section-title">Say less. Say hello.</h2>
   <div class="contact-wrap">
@@ -849,6 +903,141 @@
   document.addEventListener('dragstart',e=>{
     if(['IMG','VIDEO'].includes(e.target.tagName))e.preventDefault();
   });
+</script>
+
+<!-- ============================ NAV BALL ============================ -->
+<div id="navBall" role="navigation" aria-label="Site navigation">
+  <nav class="nav-links">
+    <a href="#work"    class="nav-lbl">Work</a>
+    <a href="#about"   class="nav-lbl">About</a>
+    <a href="#gallery" class="nav-lbl">Gallery</a>
+    <a href="#contact" class="nav-lbl">Contact</a>
+  </nav>
+  <div class="nav-ball-wrap" aria-hidden="true">
+    <canvas id="navBallCanvas"></canvas>
+    <span class="nav-ball-ring"></span>
+    <span class="nav-drag-hint">drag</span>
+  </div>
+</div>
+
+<script type="module">
+  import * as THREE from 'three';
+  initNavBall();
+
+  function initNavBall() {
+    const ballWrap   = document.querySelector('.nav-ball-wrap');
+    const ballCanvas = document.getElementById('navBallCanvas');
+    const navBallEl  = document.getElementById('navBall');
+    if (!ballWrap || !ballCanvas) return;
+
+    /* ---------- renderer / scene / camera ---------- */
+    const renderer = new THREE.WebGLRenderer({ canvas: ballCanvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 50);
+    camera.position.z = 2.8;
+
+    /* outer cage — white, very subtle */
+    const cageGeo  = new THREE.DodecahedronGeometry(1.12, 0);
+    const cageMesh = new THREE.LineSegments(
+      new THREE.EdgesGeometry(cageGeo),
+      new THREE.LineBasicMaterial({ color: 0xf4f4f5, transparent: true, opacity: 0.14 })
+    );
+    cageGeo.dispose();
+    scene.add(cageMesh);
+
+    /* inner icosahedron — red wireframe */
+    const icoGeo  = new THREE.IcosahedronGeometry(0.86, 1);
+    const icoMesh = new THREE.LineSegments(
+      new THREE.EdgesGeometry(icoGeo),
+      new THREE.LineBasicMaterial({ color: 0xd50000, transparent: true, opacity: 0.78 })
+    );
+    icoGeo.dispose();
+    scene.add(icoMesh);
+
+    function setSize() {
+      const r = ballCanvas.getBoundingClientRect();
+      if (r.width === 0) return;
+      renderer.setSize(r.width, r.height, false);
+      camera.aspect = r.width / r.height;
+      camera.updateProjectionMatrix();
+    }
+    setSize();
+    window.addEventListener('resize', setSize, { passive: true });
+
+    /* ---------- drag ---------- */
+    let dragging = false;
+    let prev = { x: 0, y: 0 };
+    let vel  = { x: 0, y: 0 };
+
+    ballWrap.addEventListener('mousedown', e => {
+      dragging = true;
+      prev = { x: e.clientX, y: e.clientY };
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      vel.x = (e.clientY - prev.y) * 0.013;
+      vel.y = (e.clientX - prev.x) * 0.013;
+      prev  = { x: e.clientX, y: e.clientY };
+    }, { passive: true });
+    window.addEventListener('mouseup', () => { dragging = false; }, { passive: true });
+
+    ballWrap.addEventListener('touchstart', e => {
+      dragging = true;
+      prev = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      e.preventDefault();
+    }, { passive: false });
+    window.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      vel.x = (e.touches[0].clientY - prev.y) * 0.013;
+      vel.y = (e.touches[0].clientX - prev.x) * 0.013;
+      prev  = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }, { passive: true });
+    window.addEventListener('touchend', () => { dragging = false; }, { passive: true });
+
+    /* ---------- render loop ---------- */
+    const AUTO = 0.0048;
+    let targetOpacity = 0.78;
+    navBallEl.addEventListener('mouseenter', () => { targetOpacity = 1.0; });
+    navBallEl.addEventListener('mouseleave', () => { targetOpacity = 0.78; });
+
+    function tick() {
+      if (!dragging) {
+        vel.x *= 0.92;
+        vel.y += (AUTO - vel.y) * 0.012; /* drift back to gentle auto-spin */
+      }
+      icoMesh.rotation.x  += vel.x;
+      icoMesh.rotation.y  += vel.y;
+      cageMesh.rotation.x += vel.x * 0.55;
+      cageMesh.rotation.y += vel.y * 0.72;
+
+      icoMesh.material.opacity = THREE.MathUtils.lerp(icoMesh.material.opacity, targetOpacity, 0.06);
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    /* ---------- active-section highlight ---------- */
+    const lblMap = {
+      work:    document.querySelector('.nav-lbl[href="#work"]'),
+      about:   document.querySelector('.nav-lbl[href="#about"]'),
+      gallery: document.querySelector('.nav-lbl[href="#gallery"]'),
+      contact: document.querySelector('.nav-lbl[href="#contact"]'),
+    };
+    const sio = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        const lbl = lblMap[e.target.id];
+        if (lbl) lbl.classList.toggle('active', e.isIntersecting);
+      });
+    }, { threshold: 0.35 });
+    Object.keys(lblMap).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) sio.observe(el);
+    });
+  }
 </script>
 </body>
 </html>
