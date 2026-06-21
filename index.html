@@ -394,7 +394,8 @@
     transition:opacity .3s cubic-bezier(.2,.7,.2,1),transform .3s cubic-bezier(.2,.7,.2,1);
     pointer-events:none;
   }
-  #navBall:hover .nav-links{opacity:1;transform:none;pointer-events:all}
+  #navBall:hover .nav-links,
+  #navBall.open .nav-links{opacity:1;transform:none;pointer-events:all}
   .nav-lbl{
     font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
     color:var(--muted);white-space:nowrap;
@@ -411,9 +412,9 @@
   .nav-links .nav-lbl:nth-child(3){transition-delay:.10s}
   .nav-links .nav-lbl:nth-child(4){transition-delay:.15s}
   @media(max-width:560px){
-    #navBall{bottom:16px;right:16px}
+    #navBall{bottom:16px;right:16px;flex-direction:column-reverse;align-items:flex-end;gap:8px}
     .nav-ball-wrap{width:64px;height:64px}
-    .nav-links,.nav-drag-hint{display:none}
+    .nav-drag-hint{display:none}
   }
   @media(prefers-reduced-motion:reduce){#navBall{display:none}}
 </style>
@@ -984,9 +985,11 @@
     }, { passive: true });
     window.addEventListener('mouseup', () => { dragging = false; }, { passive: true });
 
+    let tapStart = { x: 0, y: 0 };
     ballWrap.addEventListener('touchstart', e => {
       dragging = true;
       prev = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      tapStart = { ...prev };
       e.preventDefault();
     }, { passive: false });
     window.addEventListener('touchmove', e => {
@@ -996,6 +999,23 @@
       prev  = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     }, { passive: true });
     window.addEventListener('touchend', () => { dragging = false; }, { passive: true });
+
+    /* tap (small movement) toggles nav on mobile */
+    ballWrap.addEventListener('touchend', e => {
+      const dx = Math.abs(e.changedTouches[0].clientX - tapStart.x);
+      const dy = Math.abs(e.changedTouches[0].clientY - tapStart.y);
+      if (dx < 8 && dy < 8) navBallEl.classList.toggle('open');
+    }, { passive: true });
+
+    /* tap outside closes nav */
+    document.addEventListener('touchstart', e => {
+      if (!navBallEl.contains(e.target)) navBallEl.classList.remove('open');
+    }, { passive: true });
+
+    /* tapping a link closes nav */
+    navBallEl.querySelectorAll('.nav-lbl').forEach(lbl => {
+      lbl.addEventListener('click', () => navBallEl.classList.remove('open'));
+    });
 
     /* ---------- render loop ---------- */
     const AUTO = 0.0048;
