@@ -171,26 +171,59 @@
   .about-sign span{color:var(--grey);font-family:var(--mono);font-size:12px;font-weight:300;letter-spacing:.1em;text-transform:none}
 
   /* ===================================================== GALLERY */
-  .gallery{columns:3;column-gap:14px;margin-top:42px}
+  .gallery{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:14px;margin-top:42px;
+    perspective:1400px;perspective-origin:50% 20%;
+  }
   .shot{
-    break-inside:avoid;margin-bottom:14px;position:relative;overflow:hidden;
-    border-radius:10px;border:.5px solid var(--line);background:var(--panel);cursor:pointer;
+    position:relative;overflow:hidden;
+    border-radius:12px;border:.5px solid var(--line);
+    background:var(--panel);cursor:pointer;
+    transform-style:preserve-3d;
+    aspect-ratio:4/3;
+    box-shadow:0 2px 8px rgba(0,0,0,.45),0 6px 22px rgba(0,0,0,.35);
   }
-  .shot img,.shot video{width:100%;display:block;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+
+  /* tab accent — red sweep on entry */
+  .shot::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--red),rgba(213,0,0,.25) 60%,transparent);
+    z-index:3;transform:scaleX(0);transform-origin:left;pointer-events:none;
+    transition:transform .55s cubic-bezier(.2,.7,.2,1) .2s;
+  }
+  .shot.in::before{transform:scaleX(1)}
+
+  .shot img,.shot video{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .7s cubic-bezier(.2,.7,.2,1);
+  }
   .shot:hover img,.shot:hover video{transform:scale(1.05)}
-  .shot::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.5));opacity:0;transition:.4s;pointer-events:none}
-  .shot:hover::after{opacity:1}
-  .shot .num{
-    position:absolute;top:10px;left:12px;z-index:2;font-family:var(--mono);font-size:10px;
-    letter-spacing:.2em;color:var(--white);opacity:0;transition:.4s;
+
+  /* video placeholder — gradient behind unloaded frames */
+  .shot video{background:linear-gradient(135deg,#1c1c22 0%,#111116 100%);min-height:80px}
+
+  .shot::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55));
+    opacity:0;transition:.4s;pointer-events:none;z-index:1;
   }
-  .shot:hover .num{opacity:.85}
+  .shot:hover::after{opacity:1}
+
+  .shot .num{
+    position:absolute;bottom:10px;left:12px;z-index:2;
+    font-family:var(--mono);font-size:10px;letter-spacing:.2em;
+    color:var(--white);opacity:0;transition:.4s;
+  }
+  .shot:hover .num,.shot:active .num{opacity:.85}
+
   .play-icon{
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
     width:44px;height:44px;border-radius:50%;
     background:rgba(10,10,12,.55);border:1.5px solid rgba(255,255,255,.25);
     display:flex;align-items:center;justify-content:center;
     pointer-events:none;transition:opacity .3s,background .3s;
+    opacity:.75;
   }
   .play-icon::after{
     content:'';display:block;
@@ -198,11 +231,20 @@
     border-color:transparent transparent transparent rgba(255,255,255,.9);
     margin-left:3px;
   }
-  .shot:hover .play-icon{background:rgba(213,0,0,.6);border-color:rgba(213,0,0,.8)}
+  .shot:hover .play-icon{background:rgba(213,0,0,.6);border-color:rgba(213,0,0,.8);opacity:1}
+
+  @media(hover:hover){
+    .shot:hover{
+      box-shadow:0 8px 32px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.4),
+                 0 0 0 .5px rgba(213,0,0,.2),0 0 40px rgba(213,0,0,.05);
+      z-index:2;
+    }
+  }
+
   .more-slot{
     margin-top:30px;border:1px dashed var(--line-2);border-radius:10px;padding:26px;
     text-align:center;font-family:var(--mono);font-size:12px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--faint);
+    text-transform:uppercase;color:var(--faint);grid-column:1/-1;
   }
 
   /* ===================================================== CONTACT */
@@ -291,11 +333,15 @@
   }
   .feat.in{opacity:1;transform:none}
 
-  /* gallery shot stagger */
+  /* gallery shot — 3D card deal */
   .shot{
-    opacity:0;transform:translateY(18px);
-    transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1);
+    opacity:0;
+    transition:opacity .65s cubic-bezier(.2,.7,.2,1),transform .65s cubic-bezier(.2,.7,.2,1),box-shadow .35s;
   }
+  /* desktop 3-col: left col deals from left, right col from right, center from above */
+  .shot:not(.in):nth-child(3n+1){transform:rotateY(-28deg) rotateX(10deg) translateX(-14px) scale(.91)}
+  .shot:not(.in):nth-child(3n+2){transform:rotateX(26deg) translateY(18px) scale(.91)}
+  .shot:not(.in):nth-child(3n)  {transform:rotateY(28deg) rotateX(10deg) translateX(14px) scale(.91)}
   .shot.in{opacity:1;transform:none}
 
   /* about columns slide from sides */
@@ -326,7 +372,16 @@
     .about-photo{width:100%;max-width:400px;order:2}
     .about-copy{order:1}
     .about-copy p{text-align:left}
-    .gallery{columns:2}
+    .gallery{grid-template-columns:repeat(2,1fr)}
+    /* 2-col: odd items left col, even items right col */
+    .shot:not(.in):nth-child(odd) {transform:rotateY(-22deg) rotateX(10deg) translateX(-10px) scale(.92)}
+    .shot:not(.in):nth-child(even){transform:rotateY(22deg) rotateX(10deg) translateX(10px) scale(.92)}
+    /* override 3-col rules */
+    .shot:not(.in):nth-child(3n+1),
+    .shot:not(.in):nth-child(3n+2),
+    .shot:not(.in):nth-child(3n){transform:unset}
+    .shot:not(.in):nth-child(odd) {transform:rotateY(-22deg) rotateX(10deg) translateX(-10px) scale(.92)}
+    .shot:not(.in):nth-child(even){transform:rotateY(22deg) rotateX(10deg) translateX(10px) scale(.92)}
     .section{padding:64px 18px}
   }
   @keyframes cardpop{
@@ -339,7 +394,7 @@
     to{opacity:1;transform:none}
   }
   @media(max-width:560px){
-    .gallery{columns:2;column-gap:8px}
+    .gallery{grid-template-columns:repeat(2,1fr);gap:8px}
     .featured-grid{grid-template-columns:1fr}
     .feat.big,.feat.tall,.feat.wide{grid-column:span 1;aspect-ratio:21/12}
     .hero{min-height:100vh}
@@ -351,8 +406,8 @@
     .reveal{transition-duration:.45s}
     .about-photo{transition-duration:.55s}
     .about-copy{transition-duration:.55s}
-    /* card pop entrance on mobile */
-    .shot.in,.feat.in{animation:cardpop .45s cubic-bezier(.2,.7,.2,1) both}
+    /* card pop entrance on mobile — only for featured, shots use 3D deal */
+    .feat.in{animation:cardpop .45s cubic-bezier(.2,.7,.2,1) both}
     /* section words fade up faster */
     .section-title .word{transition-duration:.4s}
     /* touch press feedback */
@@ -820,17 +875,83 @@
     });
   });
 
-  /* ---------- staggered card entrances ---------- */
+  /* ---------- staggered featured card entrances ---------- */
   const cardIO=new IntersectionObserver(es=>{
     es.forEach(e=>{
       if(!e.isIntersecting)return;
-      [...e.target.querySelectorAll('.feat,.shot')].forEach((c,i)=>{
+      [...e.target.querySelectorAll('.feat')].forEach((c,i)=>{
         setTimeout(()=>c.classList.add('in'),i*(mob?45:65));
       });
       cardIO.unobserve(e.target);
     });
   },{threshold:mob?0:.04});
-  document.querySelectorAll('.featured-grid,.gallery').forEach(el=>cardIO.observe(el));
+  document.querySelectorAll('.featured-grid').forEach(el=>cardIO.observe(el));
+
+  /* ---------- 3D gallery — per-card observer ---------- */
+  const shotIO=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('in');shotIO.unobserve(e.target);}
+    });
+  },{threshold:.06,rootMargin:'0px 0px -30px 0px'});
+  document.querySelectorAll('.gallery .shot').forEach(s=>shotIO.observe(s));
+
+  /* ---------- 3D scroll-reactive tilt ---------- */
+  (function(){
+    const allShots=document.querySelectorAll('.gallery .shot');
+    let raf=null;
+    function tiltByScroll(){
+      const midY=window.innerHeight/2;
+      allShots.forEach(shot=>{
+        if(!shot.classList.contains('in')||shot._touching)return;
+        const r=shot.getBoundingClientRect();
+        if(r.bottom<-60||r.top>window.innerHeight+60)return;
+        const offset=((r.top+r.height/2)-midY)/(window.innerHeight*.6);
+        const rx=Math.max(-7,Math.min(7,offset*7));
+        shot.style.transform=`rotateX(${rx}deg)`;
+      });
+      raf=null;
+    }
+    window.addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(tiltByScroll);},{passive:true});
+
+    /* touch tilt per card */
+    allShots.forEach(shot=>{
+      shot.addEventListener('touchmove',e=>{
+        if(!shot.classList.contains('in'))return;
+        shot._touching=true;
+        const r=shot.getBoundingClientRect();
+        const t=e.touches[0];
+        const nx=(t.clientX-r.left)/r.width-.5;
+        const ny=(t.clientY-r.top)/r.height-.5;
+        const ry=nx*24,rx=-ny*18;
+        shot.style.transition='transform .1s ease-out';
+        shot.style.transform=`rotateY(${ry}deg) rotateX(${rx}deg) scale(1.05) translateZ(8px)`;
+      },{passive:true});
+      shot.addEventListener('touchend',()=>{
+        shot._touching=false;
+        shot.style.transition='';
+        shot.style.transform='';
+        setTimeout(()=>{if(!raf)raf=requestAnimationFrame(tiltByScroll);},120);
+      },{passive:true});
+    });
+  })();
+
+  /* ---------- video poster frame capture ---------- */
+  document.querySelectorAll('.shot video').forEach(v=>{
+    const capture=()=>{
+      if(v.poster||!v.videoWidth)return;
+      try{
+        const c=document.createElement('canvas');
+        c.width=Math.min(v.videoWidth,640);
+        c.height=Math.min(v.videoHeight,360);
+        c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+        const url=c.toDataURL('image/jpeg',.65);
+        if(url.length>2000)v.poster=url;
+      }catch(e){}
+    };
+    v.addEventListener('seeked',capture,{once:true});
+    v.addEventListener('loadedmetadata',()=>{v.currentTime=.5;},{once:true});
+    if(v.readyState>=1)v.currentTime=.5;
+  });
 
   /* ---------- HUD line draw ---------- */
   const hudIO=new IntersectionObserver(es=>{
