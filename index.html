@@ -170,48 +170,49 @@
   }
   .about-sign span{color:var(--grey);font-family:var(--mono);font-size:12px;font-weight:300;letter-spacing:.1em;text-transform:none}
 
-  /* ===================================================== GALLERY */
+  /* ===================================================== GALLERY — coverflow wheel */
   .gallery{
-    display:grid;grid-template-columns:repeat(3,1fr);
-    gap:14px;margin-top:42px;
-    perspective:700px;perspective-origin:50% 30%;
+    display:flex;align-items:center;
+    overflow-x:scroll;overflow-y:visible;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding:52px 0 64px;
+    margin-top:42px;
+    gap:18px;
   }
-  .shot{
-    position:relative;overflow:hidden;
-    border-radius:12px;border:.5px solid var(--line);
-    background:var(--panel);cursor:pointer;
-    transform-style:preserve-3d;
-    aspect-ratio:4/3;
-    box-shadow:0 2px 8px rgba(0,0,0,.45),0 6px 22px rgba(0,0,0,.35);
-  }
+  .gallery::-webkit-scrollbar{display:none}
 
-  /* subtle top-edge specular — sells physical card depth */
-  .shot::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:1px;
-    background:rgba(255,255,255,.1);
-    z-index:3;pointer-events:none;
+  .shot{
+    flex-shrink:0;
+    width:min(72vw,340px);
+    aspect-ratio:3/2;
+    scroll-snap-align:center;
+    position:relative;overflow:hidden;
+    border-radius:14px;border:.5px solid var(--line-2);
+    background:var(--panel);cursor:pointer;
+    transform-origin:center center;
+    will-change:transform,opacity;
+    box-shadow:0 4px 24px rgba(0,0,0,.5);
   }
 
   .shot img,.shot video{
     width:100%;height:100%;object-fit:cover;display:block;
-    transition:transform .7s cubic-bezier(.2,.7,.2,1);
   }
-  .shot:hover img,.shot:hover video{transform:scale(1.05)}
+  .shot video{background:linear-gradient(135deg,#1c1c22,#111116);min-height:80px}
 
-  /* video placeholder — gradient behind unloaded frames */
-  .shot video{background:linear-gradient(135deg,#1c1c22 0%,#111116 100%);min-height:80px}
-
+  /* vignette on hover / active */
   .shot::after{
     content:'';position:absolute;inset:0;
-    background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55));
-    opacity:0;transition:.4s;pointer-events:none;z-index:1;
+    background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.6));
+    opacity:0;transition:.35s;pointer-events:none;z-index:1;
   }
-  .shot:hover::after{opacity:1}
+  .shot:hover::after,.shot:active::after{opacity:1}
 
   .shot .num{
     position:absolute;bottom:10px;left:12px;z-index:2;
     font-family:var(--mono);font-size:10px;letter-spacing:.2em;
-    color:var(--white);opacity:0;transition:.4s;
+    color:var(--white);opacity:0;transition:.35s;
   }
   .shot:hover .num,.shot:active .num{opacity:.85}
 
@@ -220,8 +221,7 @@
     width:44px;height:44px;border-radius:50%;
     background:rgba(10,10,12,.55);border:1.5px solid rgba(255,255,255,.25);
     display:flex;align-items:center;justify-content:center;
-    pointer-events:none;transition:opacity .3s,background .3s;
-    opacity:.75;
+    pointer-events:none;transition:opacity .3s,background .3s;opacity:.8;
   }
   .play-icon::after{
     content:'';display:block;
@@ -229,20 +229,12 @@
     border-color:transparent transparent transparent rgba(255,255,255,.9);
     margin-left:3px;
   }
-  .shot:hover .play-icon{background:rgba(213,0,0,.6);border-color:rgba(213,0,0,.8);opacity:1}
-
-  @media(hover:hover){
-    .shot.in:hover{
-      transform:scale(1.05) translateZ(18px)!important;
-      box-shadow:0 22px 52px rgba(0,0,0,.72),0 0 0 .5px rgba(213,0,0,.22)!important;
-      z-index:2;
-    }
-  }
+  .shot:hover .play-icon{background:rgba(213,0,0,.6);border-color:rgba(213,0,0,.8)}
 
   .more-slot{
     margin-top:30px;border:1px dashed var(--line-2);border-radius:10px;padding:26px;
     text-align:center;font-family:var(--mono);font-size:12px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--faint);grid-column:1/-1;
+    text-transform:uppercase;color:var(--faint);
   }
 
   /* ===================================================== CONTACT */
@@ -332,27 +324,8 @@
   .feat.in{opacity:1;transform:none}
 
   /* gallery shot — 3D card deal → permanent resting angle */
-  .shot{
-    opacity:0;
-    transition:opacity .65s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1),box-shadow .4s;
-  }
-  /* entry: cards fly in from exaggerated angles */
-  .shot:not(.in):nth-child(3n+1){transform:rotateY(-36deg) rotateX(14deg) translateX(-20px) scale(.87)}
-  .shot:not(.in):nth-child(3n+2){transform:rotateX(32deg) translateY(24px) scale(.87)}
-  .shot:not(.in):nth-child(3n)  {transform:rotateY(36deg) rotateX(14deg) translateX(20px) scale(.87)}
-  /* resting: permanent 3D angle — grid never looks flat */
-  .shot.in:nth-child(3n+1){
-    opacity:1;transform:rotateY(-16deg) rotateX(5deg);
-    box-shadow:-12px 20px 46px rgba(0,0,0,.72),0 3px 8px rgba(0,0,0,.4);
-  }
-  .shot.in:nth-child(3n+2){
-    opacity:1;transform:rotateX(8deg);
-    box-shadow:0 22px 48px rgba(0,0,0,.66),0 3px 8px rgba(0,0,0,.4);
-  }
-  .shot.in:nth-child(3n){
-    opacity:1;transform:rotateY(16deg) rotateX(5deg);
-    box-shadow:12px 20px 46px rgba(0,0,0,.72),0 3px 8px rgba(0,0,0,.4);
-  }
+  /* gallery shots — coverflow JS sets all transforms */
+  .shot{transition:box-shadow .3s}
 
   /* about columns slide from sides */
   .about-photo{
@@ -382,21 +355,6 @@
     .about-photo{width:100%;max-width:400px;order:2}
     .about-copy{order:1}
     .about-copy p{text-align:left}
-    .gallery{grid-template-columns:repeat(2,1fr)}
-    /* reset 3-col entry angles */
-    .shot:not(.in):nth-child(3n+1),
-    .shot:not(.in):nth-child(3n+2),
-    .shot:not(.in):nth-child(3n){transform:unset}
-    /* 2-col entry angles */
-    .shot:not(.in):nth-child(odd) {transform:rotateY(-28deg) rotateX(10deg) translateX(-12px) scale(.9)}
-    .shot:not(.in):nth-child(even){transform:rotateY(28deg) rotateX(10deg) translateX(12px) scale(.9)}
-    /* reset 3-col resting angles */
-    .shot.in:nth-child(3n+1),
-    .shot.in:nth-child(3n+2),
-    .shot.in:nth-child(3n){transform:unset;box-shadow:unset}
-    /* 2-col permanent 3D resting angles */
-    .shot.in:nth-child(odd) {transform:rotateY(-14deg) rotateX(5deg);box-shadow:-10px 16px 38px rgba(0,0,0,.7),0 3px 8px rgba(0,0,0,.4)}
-    .shot.in:nth-child(even){transform:rotateY(14deg) rotateX(5deg);box-shadow:10px 16px 38px rgba(0,0,0,.7),0 3px 8px rgba(0,0,0,.4)}
     .section{padding:64px 18px}
   }
   @keyframes cardpop{
@@ -409,7 +367,7 @@
     to{opacity:1;transform:none}
   }
   @media(max-width:560px){
-    .gallery{grid-template-columns:repeat(2,1fr);gap:8px}
+    .shot{width:min(78vw,300px)}
     .featured-grid{grid-template-columns:1fr}
     .feat.big,.feat.tall,.feat.wide{grid-column:span 1;aspect-ratio:21/12}
     .hero{min-height:100vh}
@@ -902,32 +860,49 @@
   },{threshold:mob?0:.04});
   document.querySelectorAll('.featured-grid').forEach(el=>cardIO.observe(el));
 
-  /* ---------- 3D gallery — per-card observer ---------- */
-  const shotIO=new IntersectionObserver(es=>{
-    es.forEach(e=>{
-      if(e.isIntersecting){e.target.classList.add('in');shotIO.unobserve(e.target);}
-    });
-  },{threshold:.06,rootMargin:'0px 0px -30px 0px'});
-  document.querySelectorAll('.gallery .shot').forEach(s=>shotIO.observe(s));
-
-  /* ---------- 3D touch tilt — drag to pivot each card ---------- */
+  /* ---------- coverflow wheel ---------- */
   (function(){
-    const allShots=document.querySelectorAll('.gallery .shot');
-    allShots.forEach(shot=>{
-      shot.addEventListener('touchmove',e=>{
-        if(!shot.classList.contains('in'))return;
-        const r=shot.getBoundingClientRect();
-        const t=e.touches[0];
-        const nx=(t.clientX-r.left)/r.width-.5;
-        const ny=(t.clientY-r.top)/r.height-.5;
-        shot.style.transition='transform .08s ease-out';
-        shot.style.transform=`rotateY(${nx*28}deg) rotateX(${-ny*22}deg) scale(1.06) translateZ(10px)`;
-      },{passive:true});
-      shot.addEventListener('touchend',()=>{
-        shot.style.transition='transform .5s cubic-bezier(.2,.7,.2,1)';
-        shot.style.transform=''; /* release → CSS nth-child angle resumes */
-        setTimeout(()=>shot.style.transition='',520);
-      },{passive:true});
+    document.querySelectorAll('.gallery').forEach(gallery=>{
+      const shots=[...gallery.querySelectorAll('.shot')];
+      if(!shots.length)return;
+
+      /* set padding so first/last card centres in the track */
+      function setPad(){
+        const hw=Math.round((gallery.clientWidth-shots[0].offsetWidth)/2);
+        gallery.style.paddingLeft=hw+'px';
+        gallery.style.paddingRight=hw+'px';
+      }
+      setPad();
+      window.addEventListener('resize',setPad,{passive:true});
+
+      let raf=null;
+      function update(){
+        const cx=gallery.scrollLeft+gallery.clientWidth/2;
+        shots.forEach(shot=>{
+          const sc=shot.offsetLeft+shot.offsetWidth/2;
+          /* offset in "card units" from centre — negative=left, positive=right */
+          const off=(sc-cx)/shot.offsetWidth;
+          const c=Math.max(-2.5,Math.min(2.5,off));
+
+          /* wheel rotation: 55° per card-unit */
+          const ry=-c*55;
+          /* scale: centre 1, one card away 0.72, two away 0.52 */
+          const sc2=Math.max(.45,1-Math.abs(c)*.22);
+          /* retreat depth */
+          const tz=-Math.abs(c)*90;
+          /* fade off-centre cards */
+          const op=Math.max(.15,1-Math.abs(c)*.52);
+
+          shot.style.transform=`perspective(900px) rotateY(${ry}deg) scale(${sc2}) translateZ(${tz}px)`;
+          shot.style.opacity=op;
+          shot.style.zIndex=Math.round(20-Math.abs(c)*6);
+        });
+        raf=null;
+      }
+
+      gallery.addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(update);},{passive:true});
+      /* initial paint */
+      requestAnimationFrame(update);
     });
   })();
 
