@@ -325,9 +325,12 @@
   }
   .feat.in{opacity:1;transform:none}
 
-  /* gallery shot — 3D card deal → permanent resting angle */
-  /* gallery shots — coverflow JS sets all transforms */
-  .shot{transition:box-shadow .3s}
+  /* gallery shots — coverflow JS handles all transforms */
+  .shot{transition:box-shadow .35s}
+  /* center-card highlight — red ring + deep shadow, only in main gallery */
+  #gallery .shot.cf-active{
+    box-shadow:0 0 0 2px var(--red),0 10px 52px rgba(0,0,0,.8),0 0 36px rgba(200,18,18,.25);
+  }
 
   /* about columns slide from sides */
   .about-photo{
@@ -870,8 +873,11 @@
   /* ---------- coverflow wheel (absolute-position drag) ---------- */
   (function(){
     document.querySelectorAll('.gallery').forEach(gallery=>{
-      /* reverse so most-recently-added card (last in DOM) is at index 0 */
-      const shots=[...gallery.querySelectorAll('.shot')].reverse();
+      /* main gallery: most-recently-added first; extras: keep natural order */
+      const isMain=gallery.id==='gallery';
+      const shots=isMain
+        ? [...gallery.querySelectorAll('.shot')].reverse()
+        : [...gallery.querySelectorAll('.shot')];
       if(!shots.length)return;
 
       let pos=0,target=0,rafId=null;
@@ -888,13 +894,20 @@
           const off=Math.max(-5,Math.min(5,i-p));
           const tx=off*s;
           const ry=off*34;
-          const sc=Math.max(.62,1-Math.abs(off)*.12);
+          /* main gallery: more dramatic size drop so center feels like a stage */
+          const sc=isMain
+            ? Math.max(.52,1-Math.abs(off)*.22)
+            : Math.max(.62,1-Math.abs(off)*.12);
           const tz=-Math.abs(off)*40;
           const op=Math.max(.45,1-Math.abs(off)*.2);
           shot.style.transform=`translate(-50%,-50%) translateX(${tx}px) perspective(900px) rotateY(${ry}deg) scale(${sc}) translateZ(${tz}px)`;
           shot.style.opacity=op;
-          /* center card highest, rest stack behind by depth */
           shot.style.zIndex=Math.round(30-Math.abs(off)*7);
+          /* glow highlight only on main gallery center card */
+          if(isMain){
+            if(Math.abs(off)<.4) shot.classList.add('cf-active');
+            else shot.classList.remove('cf-active');
+          }
         });
       }
 
@@ -1030,9 +1043,10 @@
     else if(dy>80){close();}
   },{passive:true});
 
-  /* gallery shots — scoped + reversed to match coverflow visual order */
+  /* gallery shots — scoped; main gallery reversed to match coverflow order */
   document.querySelectorAll('.gallery').forEach(g=>{
-    const els=[...g.querySelectorAll('[data-full]')].reverse();
+    const raw=[...g.querySelectorAll('[data-full]')];
+    const els=g.id==='gallery' ? raw.reverse() : raw;
     const pool=els.map(e=>e.dataset.full);
     const types=els.map(e=>e.dataset.type||'image');
     els.forEach((el,i)=>el.addEventListener('click',()=>open(pool,types,i)));
