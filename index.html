@@ -873,8 +873,8 @@
   /* ---------- coverflow wheel (absolute-position drag) ---------- */
   (function(){
     document.querySelectorAll('.gallery').forEach(gallery=>{
-      /* main gallery: most-recently-added first; extras: keep natural order */
-      const isMain=gallery.id==='gallery';
+      /* main gallery has no id; extras has id="extras" */
+      const isMain=!gallery.id;
       const shots=isMain
         ? [...gallery.querySelectorAll('.shot')].reverse()
         : [...gallery.querySelectorAll('.shot')];
@@ -1046,7 +1046,7 @@
   /* gallery shots — scoped; main gallery reversed to match coverflow order */
   document.querySelectorAll('.gallery').forEach(g=>{
     const raw=[...g.querySelectorAll('[data-full]')];
-    const els=g.id==='gallery' ? raw.reverse() : raw;
+    const els=!g.id ? raw.reverse() : raw;
     const pool=els.map(e=>e.dataset.full);
     const types=els.map(e=>e.dataset.type||'image');
     els.forEach((el,i)=>el.addEventListener('click',()=>open(pool,types,i)));
