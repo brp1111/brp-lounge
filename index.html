@@ -185,14 +185,12 @@
     box-shadow:0 2px 8px rgba(0,0,0,.45),0 6px 22px rgba(0,0,0,.35);
   }
 
-  /* tab accent — red sweep on entry */
+  /* subtle top-edge specular — sells physical card depth */
   .shot::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:2px;
-    background:linear-gradient(90deg,var(--red),rgba(213,0,0,.25) 60%,transparent);
-    z-index:3;transform:scaleX(0);transform-origin:left;pointer-events:none;
-    transition:transform .55s cubic-bezier(.2,.7,.2,1) .2s;
+    content:'';position:absolute;top:0;left:0;right:0;height:1px;
+    background:rgba(255,255,255,.1);
+    z-index:3;pointer-events:none;
   }
-  .shot.in::before{transform:scaleX(1)}
 
   .shot img,.shot video{
     width:100%;height:100%;object-fit:cover;display:block;
@@ -234,9 +232,9 @@
   .shot:hover .play-icon{background:rgba(213,0,0,.6);border-color:rgba(213,0,0,.8);opacity:1}
 
   @media(hover:hover){
-    .shot:hover{
-      box-shadow:0 8px 32px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.4),
-                 0 0 0 .5px rgba(213,0,0,.2),0 0 40px rgba(213,0,0,.05);
+    .shot.in:hover{
+      transform:scale(1.05) translateZ(18px)!important;
+      box-shadow:0 22px 52px rgba(0,0,0,.72),0 0 0 .5px rgba(213,0,0,.22)!important;
       z-index:2;
     }
   }
@@ -333,16 +331,28 @@
   }
   .feat.in{opacity:1;transform:none}
 
-  /* gallery shot — 3D card deal */
+  /* gallery shot — 3D card deal → permanent resting angle */
   .shot{
     opacity:0;
-    transition:opacity .65s cubic-bezier(.2,.7,.2,1),transform .65s cubic-bezier(.2,.7,.2,1),box-shadow .35s;
+    transition:opacity .65s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1),box-shadow .4s;
   }
-  /* desktop 3-col: left col deals from left, right col from right, center from above */
-  .shot:not(.in):nth-child(3n+1){transform:rotateY(-28deg) rotateX(10deg) translateX(-14px) scale(.91)}
-  .shot:not(.in):nth-child(3n+2){transform:rotateX(26deg) translateY(18px) scale(.91)}
-  .shot:not(.in):nth-child(3n)  {transform:rotateY(28deg) rotateX(10deg) translateX(14px) scale(.91)}
-  .shot.in{opacity:1;transform:none}
+  /* entry: cards fly in from exaggerated angles */
+  .shot:not(.in):nth-child(3n+1){transform:rotateY(-36deg) rotateX(14deg) translateX(-20px) scale(.87)}
+  .shot:not(.in):nth-child(3n+2){transform:rotateX(32deg) translateY(24px) scale(.87)}
+  .shot:not(.in):nth-child(3n)  {transform:rotateY(36deg) rotateX(14deg) translateX(20px) scale(.87)}
+  /* resting: permanent 3D angle — grid never looks flat */
+  .shot.in:nth-child(3n+1){
+    opacity:1;transform:rotateY(-9deg) rotateX(4deg);
+    box-shadow:-8px 18px 42px rgba(0,0,0,.7),0 3px 8px rgba(0,0,0,.4);
+  }
+  .shot.in:nth-child(3n+2){
+    opacity:1;transform:rotateX(6deg);
+    box-shadow:0 20px 44px rgba(0,0,0,.65),0 3px 8px rgba(0,0,0,.4);
+  }
+  .shot.in:nth-child(3n){
+    opacity:1;transform:rotateY(9deg) rotateX(4deg);
+    box-shadow:8px 18px 42px rgba(0,0,0,.7),0 3px 8px rgba(0,0,0,.4);
+  }
 
   /* about columns slide from sides */
   .about-photo{
@@ -373,15 +383,20 @@
     .about-copy{order:1}
     .about-copy p{text-align:left}
     .gallery{grid-template-columns:repeat(2,1fr)}
-    /* 2-col: odd items left col, even items right col */
-    .shot:not(.in):nth-child(odd) {transform:rotateY(-22deg) rotateX(10deg) translateX(-10px) scale(.92)}
-    .shot:not(.in):nth-child(even){transform:rotateY(22deg) rotateX(10deg) translateX(10px) scale(.92)}
-    /* override 3-col rules */
+    /* reset 3-col entry angles */
     .shot:not(.in):nth-child(3n+1),
     .shot:not(.in):nth-child(3n+2),
     .shot:not(.in):nth-child(3n){transform:unset}
-    .shot:not(.in):nth-child(odd) {transform:rotateY(-22deg) rotateX(10deg) translateX(-10px) scale(.92)}
-    .shot:not(.in):nth-child(even){transform:rotateY(22deg) rotateX(10deg) translateX(10px) scale(.92)}
+    /* 2-col entry angles */
+    .shot:not(.in):nth-child(odd) {transform:rotateY(-28deg) rotateX(10deg) translateX(-12px) scale(.9)}
+    .shot:not(.in):nth-child(even){transform:rotateY(28deg) rotateX(10deg) translateX(12px) scale(.9)}
+    /* reset 3-col resting angles */
+    .shot.in:nth-child(3n+1),
+    .shot.in:nth-child(3n+2),
+    .shot.in:nth-child(3n){transform:unset;box-shadow:unset}
+    /* 2-col permanent 3D resting angles */
+    .shot.in:nth-child(odd) {transform:rotateY(-7deg) rotateX(4deg);box-shadow:-5px 14px 34px rgba(0,0,0,.67),0 3px 8px rgba(0,0,0,.4)}
+    .shot.in:nth-child(even){transform:rotateY(7deg) rotateX(4deg);box-shadow:5px 14px 34px rgba(0,0,0,.67),0 3px 8px rgba(0,0,0,.4)}
     .section{padding:64px 18px}
   }
   @keyframes cardpop{
@@ -895,42 +910,23 @@
   },{threshold:.06,rootMargin:'0px 0px -30px 0px'});
   document.querySelectorAll('.gallery .shot').forEach(s=>shotIO.observe(s));
 
-  /* ---------- 3D scroll-reactive tilt ---------- */
+  /* ---------- 3D touch tilt — drag to pivot each card ---------- */
   (function(){
     const allShots=document.querySelectorAll('.gallery .shot');
-    let raf=null;
-    function tiltByScroll(){
-      const midY=window.innerHeight/2;
-      allShots.forEach(shot=>{
-        if(!shot.classList.contains('in')||shot._touching)return;
-        const r=shot.getBoundingClientRect();
-        if(r.bottom<-60||r.top>window.innerHeight+60)return;
-        const offset=((r.top+r.height/2)-midY)/(window.innerHeight*.6);
-        const rx=Math.max(-7,Math.min(7,offset*7));
-        shot.style.transform=`rotateX(${rx}deg)`;
-      });
-      raf=null;
-    }
-    window.addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(tiltByScroll);},{passive:true});
-
-    /* touch tilt per card */
     allShots.forEach(shot=>{
       shot.addEventListener('touchmove',e=>{
         if(!shot.classList.contains('in'))return;
-        shot._touching=true;
         const r=shot.getBoundingClientRect();
         const t=e.touches[0];
         const nx=(t.clientX-r.left)/r.width-.5;
         const ny=(t.clientY-r.top)/r.height-.5;
-        const ry=nx*24,rx=-ny*18;
-        shot.style.transition='transform .1s ease-out';
-        shot.style.transform=`rotateY(${ry}deg) rotateX(${rx}deg) scale(1.05) translateZ(8px)`;
+        shot.style.transition='transform .08s ease-out';
+        shot.style.transform=`rotateY(${nx*28}deg) rotateX(${-ny*22}deg) scale(1.06) translateZ(10px)`;
       },{passive:true});
       shot.addEventListener('touchend',()=>{
-        shot._touching=false;
-        shot.style.transition='';
-        shot.style.transform='';
-        setTimeout(()=>{if(!raf)raf=requestAnimationFrame(tiltByScroll);},120);
+        shot.style.transition='transform .5s cubic-bezier(.2,.7,.2,1)';
+        shot.style.transform=''; /* release → CSS nth-child angle resumes */
+        setTimeout(()=>shot.style.transition='',520);
       },{passive:true});
     });
   })();
