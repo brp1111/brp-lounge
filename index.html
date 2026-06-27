@@ -185,7 +185,7 @@
   .shot{
     position:absolute;
     top:50%;left:50%;
-    width:min(70vw,320px);
+    width:min(62vw,260px);
     aspect-ratio:3/2;
     overflow:hidden;
     border-radius:14px;border:.5px solid var(--line-2);
@@ -365,7 +365,7 @@
     from{opacity:0;transform:translateY(20px)}
     to{opacity:1;transform:none}
   }
-  @media(min-width:561px){.gallery{height:340px}}
+  @media(min-width:561px){.gallery{height:340px}.shot{width:min(52vw,380px)}}
 
   @media(max-width:560px){
     .featured-grid{grid-template-columns:1fr}
@@ -871,17 +871,17 @@
       let tx0=0,ty0=0,tx1=0,tt0=0,vx=0,pos0=0;
       let wheelTimer=null;
 
-      function step(){return shots[0].offsetWidth+20;}
+      function step(){return shots[0].offsetWidth+14;}
 
       function render(p){
         const s=step();
         shots.forEach((shot,i)=>{
           const off=Math.max(-3,Math.min(3,i-p));
           const tx=off*s;
-          const ry=-off*52;
-          const sc=Math.max(.5,1-Math.abs(off)*.2);
-          const tz=-Math.abs(off)*80;
-          const op=Math.max(.18,1-Math.abs(off)*.48);
+          const ry=-off*48;
+          const sc=Math.max(.52,1-Math.abs(off)*.2);
+          const tz=-Math.abs(off)*70;
+          const op=Math.max(.2,1-Math.abs(off)*.45);
           shot.style.transform=`translate(-50%,-50%) translateX(${tx}px) perspective(900px) rotateY(${ry}deg) scale(${sc}) translateZ(${tz}px)`;
           shot.style.opacity=op;
           shot.style.zIndex=Math.round(20-Math.abs(off)*6);
