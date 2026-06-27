@@ -174,7 +174,7 @@
   .gallery{
     display:grid;grid-template-columns:repeat(3,1fr);
     gap:14px;margin-top:42px;
-    perspective:1400px;perspective-origin:50% 20%;
+    perspective:700px;perspective-origin:50% 30%;
   }
   .shot{
     position:relative;overflow:hidden;
@@ -342,16 +342,16 @@
   .shot:not(.in):nth-child(3n)  {transform:rotateY(36deg) rotateX(14deg) translateX(20px) scale(.87)}
   /* resting: permanent 3D angle — grid never looks flat */
   .shot.in:nth-child(3n+1){
-    opacity:1;transform:rotateY(-9deg) rotateX(4deg);
-    box-shadow:-8px 18px 42px rgba(0,0,0,.7),0 3px 8px rgba(0,0,0,.4);
+    opacity:1;transform:rotateY(-16deg) rotateX(5deg);
+    box-shadow:-12px 20px 46px rgba(0,0,0,.72),0 3px 8px rgba(0,0,0,.4);
   }
   .shot.in:nth-child(3n+2){
-    opacity:1;transform:rotateX(6deg);
-    box-shadow:0 20px 44px rgba(0,0,0,.65),0 3px 8px rgba(0,0,0,.4);
+    opacity:1;transform:rotateX(8deg);
+    box-shadow:0 22px 48px rgba(0,0,0,.66),0 3px 8px rgba(0,0,0,.4);
   }
   .shot.in:nth-child(3n){
-    opacity:1;transform:rotateY(9deg) rotateX(4deg);
-    box-shadow:8px 18px 42px rgba(0,0,0,.7),0 3px 8px rgba(0,0,0,.4);
+    opacity:1;transform:rotateY(16deg) rotateX(5deg);
+    box-shadow:12px 20px 46px rgba(0,0,0,.72),0 3px 8px rgba(0,0,0,.4);
   }
 
   /* about columns slide from sides */
@@ -395,8 +395,8 @@
     .shot.in:nth-child(3n+2),
     .shot.in:nth-child(3n){transform:unset;box-shadow:unset}
     /* 2-col permanent 3D resting angles */
-    .shot.in:nth-child(odd) {transform:rotateY(-7deg) rotateX(4deg);box-shadow:-5px 14px 34px rgba(0,0,0,.67),0 3px 8px rgba(0,0,0,.4)}
-    .shot.in:nth-child(even){transform:rotateY(7deg) rotateX(4deg);box-shadow:5px 14px 34px rgba(0,0,0,.67),0 3px 8px rgba(0,0,0,.4)}
+    .shot.in:nth-child(odd) {transform:rotateY(-14deg) rotateX(5deg);box-shadow:-10px 16px 38px rgba(0,0,0,.7),0 3px 8px rgba(0,0,0,.4)}
+    .shot.in:nth-child(even){transform:rotateY(14deg) rotateX(5deg);box-shadow:10px 16px 38px rgba(0,0,0,.7),0 3px 8px rgba(0,0,0,.4)}
     .section{padding:64px 18px}
   }
   @keyframes cardpop{
