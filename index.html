@@ -866,7 +866,8 @@
   /* ---------- coverflow wheel (absolute-position drag) ---------- */
   (function(){
     document.querySelectorAll('.gallery').forEach(gallery=>{
-      const shots=[...gallery.querySelectorAll('.shot')];
+      /* reverse so most-recently-added card (last in DOM) is at index 0 */
+      const shots=[...gallery.querySelectorAll('.shot')].reverse();
       if(!shots.length)return;
 
       let pos=0,target=0,rafId=null;
@@ -874,20 +875,22 @@
       let tx0=0,ty0=0,tx1=0,tt0=0,vx=0,pos0=0;
       let wheelTimer=null;
 
-      function step(){return Math.round(shots[0].offsetWidth*.82);}
+      /* 55 % overlap: side cards fan out behind center */
+      function step(){return Math.round(shots[0].offsetWidth*.55);}
 
       function render(p){
         const s=step();
         shots.forEach((shot,i)=>{
-          const off=Math.max(-3,Math.min(3,i-p));
+          const off=Math.max(-5,Math.min(5,i-p));
           const tx=off*s;
-          const ry=-off*42;
-          const sc=Math.max(.55,1-Math.abs(off)*.18);
-          const tz=-Math.abs(off)*60;
-          const op=Math.max(.32,1-Math.abs(off)*.36);
+          const ry=-off*34;
+          const sc=Math.max(.62,1-Math.abs(off)*.12);
+          const tz=-Math.abs(off)*40;
+          const op=Math.max(.45,1-Math.abs(off)*.2);
           shot.style.transform=`translate(-50%,-50%) translateX(${tx}px) perspective(900px) rotateY(${ry}deg) scale(${sc}) translateZ(${tz}px)`;
           shot.style.opacity=op;
-          shot.style.zIndex=Math.round(20-Math.abs(off)*6);
+          /* center card highest, rest stack behind by depth */
+          shot.style.zIndex=Math.round(30-Math.abs(off)*7);
         });
       }
 
