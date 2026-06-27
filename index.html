@@ -173,9 +173,12 @@
   /* ===================================================== GALLERY — coverflow wheel */
   .gallery{
     position:relative;
-    height:290px;         /* card ~185px + ~50px clearance each side */
+    height:290px;
     overflow:hidden;
     margin-top:42px;
+    /* break out of section padding so gallery spans full viewport */
+    width:100vw;
+    margin-left:calc(50% - 50vw);
     touch-action:pan-y;
     cursor:grab;
     user-select:none;
@@ -871,7 +874,7 @@
       let tx0=0,ty0=0,tx1=0,tt0=0,vx=0,pos0=0;
       let wheelTimer=null;
 
-      function step(){return shots[0].offsetWidth+14;}
+      function step(){return Math.round(shots[0].offsetWidth*.82);}
 
       function render(p){
         const s=step();
