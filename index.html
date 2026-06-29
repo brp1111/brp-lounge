@@ -1618,7 +1618,7 @@
     }
 
     window.addEventListener('scroll',onScroll,{passive:true});
-    window.addEventListener('resize',()=>{updateParams();if(!rafId)rafId=requestAnimationFrame(tick);},{passive:true});
+    window.addEventListener('resize',()=>{updateParams();onScroll();},{passive:true});
     window.addEventListener('orientationchange',()=>setTimeout(()=>{updateParams();onScroll();},300),{passive:true});
     updateParams();
     onScroll();
