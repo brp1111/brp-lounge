@@ -88,7 +88,7 @@
   /* ===================================================== SITE HEADER (Vectr-style) */
   .site-header{
     position:fixed;top:0;left:0;right:0;z-index:45;
-    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+    display:flex;align-items:center;justify-content:space-between;
     padding:18px clamp(18px,4vw,40px);
     pointer-events:none;
     opacity:0;transform:translateY(-12px);
@@ -104,7 +104,7 @@
   }
   .header__link:hover,.header__link.active{color:var(--white)}
   .header__logo{display:flex;justify-content:center;pointer-events:all}
-  .header__logo img{height:clamp(22px,3.5vw,32px);width:auto;filter:drop-shadow(0 2px 12px rgba(0,0,0,.5))}
+  .header__logo img{height:clamp(22px,3vw,38px);width:auto;filter:drop-shadow(0 2px 12px rgba(0,0,0,.5))}
   .pill-btn{
     font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
     padding:10px 18px;border-radius:999px;border:.5px solid var(--line-2);
@@ -589,6 +589,13 @@
     pointer-events:none;user-select:none;
   }
   .brp-helix-section .brp-helix-counter b{color:var(--red);font-weight:400}
+  @media(max-width:767px){
+    .brp-helix-section .brp-helix-counter{
+      top:auto;right:auto;
+      bottom:20px;left:50%;transform:translateX(-50%);
+      white-space:nowrap;
+    }
+  }
   .brp-helix-section .brp-helix{
     position:relative;
     width:1px;height:1px;
@@ -725,8 +732,8 @@
 
   /* ===================================================== RESPONSIVE */
   @media(max-width:900px){
-    .site-header{grid-template-columns:1fr auto;padding:14px 18px}
-    .header__nav-left,.header__nav-right .pill-btn{display:none}
+    .site-header{padding:14px 18px}
+    .header__nav-right .header__link,.header__nav-right .pill-btn{display:none}
     .menu-btn{display:block}
     .features{height:auto}
     .features__sticky{position:static;height:auto;padding:64px 18px}
@@ -806,16 +813,14 @@
 
 <!-- ============================ HEADER ============================ -->
 <header class="site-header" id="siteHeader">
-  <nav class="header__nav-left">
-    <a href="#gallery" class="header__link">Gallery</a>
-    <a href="#about" class="header__link">About</a>
-  </nav>
   <div class="header__logo">
-    <a href="#top" aria-label="BRP Lounge Home">
-      <img src="elements/BRP lounge.svg" alt="BRP Lounge">
+    <a href="#top" aria-label="BRP Specific Home">
+      <img src="elements/BRP SPECIFIC Trademark.png" alt="BRP Specific">
     </a>
   </div>
   <nav class="header__nav-right">
+    <a href="#gallery" class="header__link">Gallery</a>
+    <a href="#about" class="header__link">About</a>
     <a href="#work" class="header__link">Work</a>
     <a href="#contact" class="pill-btn pill-btn--dark">Connect</a>
     <button class="menu-btn" type="button" aria-label="Toggle menu" id="menuBtn">
@@ -855,7 +860,7 @@
         </div>
         <div class="flow__body">
           <div class="flow__track"><div class="flow__track-bar"><div class="flow__track-fill"></div></div></div>
-          <p class="flow__description">Every render starts with a scene in my head — the car, the light, the mood. I see it finished before a single polygon is placed.</p>
+          <p class="flow__description">Every render starts with a scene in my head: the car, the light, the mood. I see it finished before a single polygon is placed.</p>
         </div>
       </div>
       <div class="flow__step" data-step="2">
@@ -865,7 +870,7 @@
         </div>
         <div class="flow__body">
           <div class="flow__track"><div class="flow__track-bar"><div class="flow__track-fill"></div></div></div>
-          <p class="flow__description">3D models, materials, lighting, atmosphere — built from scratch. Six-plus years of obsession poured into every frame.</p>
+          <p class="flow__description">3D models, materials, lighting, atmosphere, all built from scratch. Six-plus years of obsession poured into every frame.</p>
         </div>
       </div>
       <div class="flow__step" data-step="3">
@@ -875,7 +880,7 @@
         </div>
         <div class="flow__body">
           <div class="flow__track"><div class="flow__track-bar"><div class="flow__track-fill"></div></div></div>
-          <p class="flow__description">Iterations until it matches the vision exactly. I don't do generic — <strong style="color:var(--red)">I do specific.</strong></p>
+          <p class="flow__description">Iterations until it matches the vision exactly. I don't do generic. <strong style="color:var(--red)">I do specific.</strong></p>
         </div>
       </div>
       <div class="flow__step" data-step="4">
@@ -885,7 +890,7 @@
         </div>
         <div class="flow__body">
           <div class="flow__track"><div class="flow__track-bar"><div class="flow__track-fill"></div></div></div>
-          <p class="flow__description">What lives here in the lounge — a personal flex, a place to show what I build for the love of it. Not a business. A portfolio.</p>
+          <p class="flow__description">What lives here in the lounge: a place to show what I build and connect with people who see cars the same way. If something resonates, reach out.</p>
         </div>
       </div>
     </div>
@@ -938,7 +943,7 @@
       <h2 class="standards__title">Calm by default,<br>loud in design</h2>
       <p class="standards__description">Bhupender Rajpurohit. <span class="hl">Hrithic</span>, if that's easier. Designer by degree, dreamer by DNA.</p>
       <p class="standards__description">I got into 3D to bring my car ideas to life, <span class="hl">exactly</span> how I imagine them. Six-plus years later, these renders are where that obsession lives.</p>
-      <p class="standards__description">Cars have shaped my story since childhood. <span class="red">I do specific.</span> This isn't a business — it's a personal flex.</p>
+      <p class="standards__description">Cars have shaped my story since childhood. <span class="red">I do specific.</span> If something here speaks to you, reach out.</p>
       <div class="standards__sign">BRP Specific <span>: if you know, you park it</span></div>
     </div>
   </div>
@@ -1021,16 +1026,16 @@
           <span class="faq-item__icon">⌄</span>
         </button>
         <div class="faq-item__content">
-          <p class="faq-item__answer">Automotive 3D renders and animations — stills, cinematics, and motion pieces. Everything is built from scratch in 3D: models, lighting, atmosphere, post. No stock, no shortcuts.</p>
+          <p class="faq-item__answer">Automotive 3D renders and animations: stills, cinematics, and motion pieces. Everything is built from scratch in 3D: models, lighting, atmosphere, post. No stock, no shortcuts.</p>
         </div>
       </div>
       <div class="faq-item">
         <button class="faq-item__header" type="button" aria-expanded="false">
-          <span class="faq-item__question">Is this a studio or freelance business?</span>
+          <span class="faq-item__question">Open to collaborations and client work?</span>
           <span class="faq-item__icon">⌄</span>
         </button>
         <div class="faq-item__content">
-          <p class="faq-item__answer">Neither, really. The BRP Lounge is a personal portfolio — a place to show what I build for the love of it. If you want to connect, reach out. But this isn't a pitch deck.</p>
+          <p class="faq-item__answer">Absolutely. The portfolio is what I build for the love of it, but if you're working on something automotive and want it done with real craft, I'd love to hear about it. Reach out through the connect section and let's see what we can make.</p>
         </div>
       </div>
       <div class="faq-item">
@@ -1039,7 +1044,7 @@
           <span class="faq-item__icon">⌄</span>
         </button>
         <div class="faq-item__content">
-          <p class="faq-item__answer">Blender for 3D, Photoshop for finishing, and a lot of iteration. Every piece starts with a vision and ends when it matches exactly what I saw in my head — not when it's "good enough."</p>
+          <p class="faq-item__answer">Blender, Unreal Engine, and Houdini. Every piece starts with a vision and ends when it matches exactly what I had in my head.</p>
         </div>
       </div>
       <div class="faq-item">
@@ -1048,7 +1053,7 @@
           <span class="faq-item__icon">⌄</span>
         </button>
         <div class="faq-item__content">
-          <p class="faq-item__answer">It's an inside joke for car people. BRP Specific means the work is tailored — not generic. If you get it, you get it. If you don't, the renders still speak for themselves.</p>
+          <p class="faq-item__answer">It's an inside joke for car people. BRP Specific means the work is tailored, not generic. If you get it, you get it. If you don't, the renders still speak for themselves.</p>
         </div>
       </div>
     </div>
