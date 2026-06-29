@@ -355,7 +355,8 @@
   .gallery{
     position:relative;
     height:290px;
-    overflow:hidden;
+    overflow:visible;
+    clip-path:inset(-70px 0);
     margin-top:42px;
     /* break out of section padding so gallery spans full viewport */
     width:100vw;
@@ -548,7 +549,8 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    overflow:hidden;
+    overflow:visible;
+    clip-path:inset(-90px 0);
     z-index:1;
     /* perspective set dynamically by JS for responsive breakpoints */
   }
@@ -736,7 +738,7 @@
   }
   /* desktop: contain within section, no full-width breakout */
   @media(min-width:561px){
-    .gallery{height:360px;width:auto;margin-left:0;overflow:hidden}
+    .gallery{height:360px;width:auto;margin-left:0;overflow:visible;clip-path:inset(-80px 0)}
     .shot{width:min(40vw,460px)}
   }
 
