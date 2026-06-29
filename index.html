@@ -183,7 +183,7 @@
     background:var(--red);
     box-shadow:0 0 10px 4px rgba(213,0,0,.55);
   }
-  @media(max-width:900px){.flow__line{display:none}}
+  @media(prefers-reduced-motion:reduce){.flow__line{display:none}}
 
   /* ===================================================== FEATURES (sticky scroll reveal) */
   .features{position:relative;z-index:1;height:320vh}
@@ -1415,17 +1415,32 @@
     const steps=[...document.querySelectorAll('.flow__step')];
     const flowLine=document.getElementById('flowLine');
     const lineFill=document.getElementById('flowLineFill');
-    if(!flow||!steps.length)return;
+    if(!flow)return;
+    const reducedMotion=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const isDesktop=window.innerWidth>900;
     let rafId=null;
     function render(){
       rafId=null;
       const rect=flow.getBoundingClientRect();
-      const scrollable=flow.offsetHeight-window.innerHeight;
-      const progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,scrollable)));
-      const idx=Math.min(steps.length-1,Math.floor(progress*steps.length));
-      steps.forEach((s,i)=>s.classList.toggle('flow__step--active',i===idx));
-      if(flowLine)flowLine.classList.toggle('active',progress>0&&progress<1);
-      if(lineFill)lineFill.style.height=(progress*100)+'%';
+      let progress;
+      if(isDesktop){
+        /* sticky-scroll: 0 at top, 1 at bottom of 400vh track */
+        const scrollable=flow.offsetHeight-window.innerHeight;
+        progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,scrollable)));
+      }else{
+        /* mobile: section crosses viewport — enter from bottom, exit at top */
+        progress=Math.max(0,Math.min(1,(window.innerHeight-rect.top)/(window.innerHeight+flow.offsetHeight)));
+      }
+      /* step activation — desktop sticky only */
+      if(isDesktop&&steps.length){
+        const idx=Math.min(steps.length-1,Math.floor(progress*steps.length));
+        steps.forEach((s,i)=>s.classList.toggle('flow__step--active',i===idx));
+      }
+      /* line — all devices except reduced-motion */
+      if(!reducedMotion){
+        if(flowLine)flowLine.classList.toggle('active',progress>0&&progress<1);
+        if(lineFill)lineFill.style.height=(progress*100)+'%';
+      }
     }
     window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(render);},{passive:true});
     render();
