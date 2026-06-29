@@ -163,17 +163,18 @@
   .flow__step--active .flow__track-fill{transform:scaleY(1)}
   .flow__description{font-size:clamp(14px,1.6vw,16px);color:var(--muted);max-width:52ch;line-height:1.75}
   .flow__line{
-    position:absolute;left:0;top:0;bottom:0;
-    width:2px;background:rgba(255,255,255,.06);
-    pointer-events:none;
+    position:fixed;left:0;top:0;
+    width:2px;height:100vh;
+    background:rgba(255,255,255,.06);
+    pointer-events:none;z-index:30;
+    opacity:0;transition:opacity .4s;
   }
+  .flow__line.active{opacity:1}
   .flow__line-fill{
     position:absolute;top:0;left:0;right:0;
     height:0%;
     background:var(--red);
-    border-radius:0 0 2px 2px;
     box-shadow:0 0 14px rgba(213,0,0,.5);
-    transition:height .08s linear;
   }
   .flow__line-fill::after{
     content:'';position:absolute;bottom:-4px;left:50%;
@@ -873,7 +874,7 @@
 <!-- ============================ FLOW (creative journey) ============================ -->
 <section class="flow" id="process">
   <div class="flow__wrapper">
-    <div class="flow__line"><div class="flow__line-fill" id="flowLineFill"></div></div>
+    <div class="flow__line" id="flowLine"><div class="flow__line-fill" id="flowLineFill"></div></div>
     <div class="flow__steps">
       <div class="flow__step flow__step--active" data-step="1">
         <div class="flow__header">
@@ -1412,6 +1413,7 @@
     if(window.matchMedia('(prefers-reduced-motion:reduce)').matches||window.innerWidth<=900)return;
     const flow=document.querySelector('.flow');
     const steps=[...document.querySelectorAll('.flow__step')];
+    const flowLine=document.getElementById('flowLine');
     const lineFill=document.getElementById('flowLineFill');
     if(!flow||!steps.length)return;
     let rafId=null;
@@ -1422,6 +1424,7 @@
       const progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,scrollable)));
       const idx=Math.min(steps.length-1,Math.floor(progress*steps.length));
       steps.forEach((s,i)=>s.classList.toggle('flow__step--active',i===idx));
+      if(flowLine)flowLine.classList.toggle('active',progress>0&&progress<1);
       if(lineFill)lineFill.style.height=(progress*100)+'%';
     }
     window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(render);},{passive:true});
