@@ -165,36 +165,6 @@
   .flow__step--passed{opacity:.55}
   .flow__description{font-size:clamp(14px,1.6vw,16px);color:var(--muted);max-width:52ch;line-height:1.75}
 
-  /* ===================================================== FEATURES (sticky scroll reveal) */
-  .features{position:relative;z-index:1;height:320vh}
-  .features__sticky{
-    position:sticky;top:0;height:100vh;display:flex;flex-direction:column;
-    justify-content:center;padding:100px clamp(18px,5vw,56px) 60px;
-  }
-  .features__title{
-    font-family:var(--display);font-weight:700;text-transform:uppercase;
-    letter-spacing:.04em;font-size:clamp(24px,4vw,42px);line-height:1.08;
-    color:var(--white);margin-bottom:clamp(32px,6vh,56px);max-width:18ch;
-  }
-  .features__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(14px,2vw,24px)}
-  .feature-item{
-    border:.5px solid var(--line);border-radius:12px;background:rgba(18,18,20,.72);
-    backdrop-filter:blur(10px);overflow:hidden;cursor:pointer;
-  }
-  .feature-item__content{padding:clamp(18px,2.5vw,28px);opacity:0;transform:translateY(60px);transition:opacity .7s,transform .7s cubic-bezier(.2,.7,.2,1)}
-  .feature-item__content.in{opacity:1;transform:none}
-  .feature-item__thumb{
-    aspect-ratio:21/12;border-radius:8px;overflow:hidden;margin-bottom:16px;
-    border:.5px solid var(--line);
-  }
-  .feature-item__thumb img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
-  .feature-item:hover .feature-item__thumb img{transform:scale(1.04)}
-  .feature-item__title{
-    font-family:var(--display);font-weight:600;font-size:clamp(14px,1.8vw,18px);
-    letter-spacing:.06em;text-transform:uppercase;color:var(--white);margin-bottom:8px;
-  }
-  .feature-item__description{font-size:13px;color:var(--muted);line-height:1.65}
-
   /* ===================================================== STANDARDS (split about) */
   .standards{position:relative;z-index:1;padding:clamp(64px,10vh,100px) clamp(18px,5vw,56px)}
   .standards__container{
@@ -737,10 +707,7 @@
     .site-header{padding:14px 18px}
     .header__nav-right .header__link,.header__nav-right .pill-btn{display:none}
     .menu-btn{display:block}
-    .features{height:auto}
-    .features__sticky{position:static;height:auto;padding:64px 18px}
-    .features__grid{grid-template-columns:1fr}
-    .feature-item__content{opacity:1;transform:none}
+    html{scroll-behavior:smooth}
     .flow{height:auto}
     .flow__wrapper{position:static;height:auto;padding:64px 18px 40px}
     .flow__step{opacity:1}
@@ -797,9 +764,6 @@
     .hero-bg{opacity:1}
     .flow{height:auto}
     .flow__wrapper{position:static;height:auto}
-    .features{height:auto}
-    .features__sticky{position:static;height:auto}
-    .feature-item__content{opacity:1;transform:none}
     *{animation:none!important;transition:none!important;scroll-behavior:auto}
     .reveal,.feat,.shot,.about-photo,.about-copy{opacity:1;transform:none}
     .section-title .word{opacity:1}
@@ -1240,7 +1204,7 @@
     scene.add(particles);
 
     /* ---------- scroll waypoints ---------- */
-    const sectionEls = Array.from(document.querySelectorAll('.features, .standards, .section, .faq, .cta-section'));
+    const sectionEls = Array.from(document.querySelectorAll('.standards, .section, .faq, .cta-section'));
     const waypointEls = [document.getElementById('top'), document.getElementById('process'), ...sectionEls, document.querySelector('.footer')].filter(Boolean);
 
     const camKeys = [
@@ -1391,15 +1355,15 @@
   (function(){
     const flow=document.querySelector('.flow');
     if(!flow)return;
-    const reducedMotion=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    const desktop=window.innerWidth>900&&!reducedMotion;
-    const steps=reducedMotion?[]:[...document.querySelectorAll('.flow__step')];
+    if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    const steps=[...document.querySelectorAll('.flow__step')];
+    let desktopLayout=window.innerWidth>900;
     let rafId=null;
     function render(){
       rafId=null;
       const rect=flow.getBoundingClientRect();
       let p;
-      if(desktop){
+      if(desktopLayout){
         const scrollable=flow.offsetHeight-window.innerHeight;
         p=Math.max(0,Math.min(1,-rect.top/Math.max(1,scrollable)));
       }else{
@@ -1414,30 +1378,7 @@
       }
     }
     window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(render);},{passive:true});
-    render();
-  })();
-
-  /* ---------- features sticky scroll reveal ---------- */
-  (function(){
-    if(window.matchMedia('(prefers-reduced-motion:reduce)').matches||window.innerWidth<=900){
-      document.querySelectorAll('.feature-item__content').forEach(c=>c.classList.add('in'));
-      return;
-    }
-    const features=document.querySelector('.features');
-    const items=[...document.querySelectorAll('.feature-item__content')];
-    if(!features||!items.length)return;
-    let rafId=null;
-    function render(){
-      rafId=null;
-      const rect=features.getBoundingClientRect();
-      const scrollable=features.offsetHeight-window.innerHeight;
-      const progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,scrollable)));
-      items.forEach((item,i)=>{
-        const threshold=(i+1)/items.length;
-        if(progress>=threshold-.15)item.classList.add('in');
-      });
-    }
-    window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(render);},{passive:true});
+    window.addEventListener('resize',()=>{desktopLayout=window.innerWidth>900;render();},{passive:true});
     render();
   })();
 
