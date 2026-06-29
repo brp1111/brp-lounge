@@ -162,28 +162,22 @@
   .flow__track-fill{width:100%;height:100%;background:var(--red);transform-origin:top;transform:scaleY(0);transition:transform .6s cubic-bezier(.4,0,.2,1)}
   .flow__step--active .flow__track-fill{transform:scaleY(1)}
   .flow__description{font-size:clamp(14px,1.6vw,16px);color:var(--muted);max-width:52ch;line-height:1.75}
-  .flow__line{
-    position:fixed;left:0;top:0;
-    width:2px;height:100vh;
-    background:rgba(255,255,255,.06);
-    pointer-events:none;z-index:30;
-    opacity:0;transition:opacity .4s;
+  /* steps-side progress track — replaces the fixed left-edge line */
+  .flow__steps{position:relative}
+  .flow__steps-prog{
+    position:absolute;left:13px;top:14px;bottom:14px;
+    width:2px;background:rgba(255,255,255,.08);
+    border-radius:2px;overflow:hidden;pointer-events:none;
   }
-  .flow__line.active{opacity:1}
-  .flow__line-fill{
-    position:absolute;top:0;left:0;right:0;
-    height:0%;
+  .flow__steps-fill{
+    position:absolute;top:0;left:0;right:0;height:0%;
     background:var(--red);
-    box-shadow:0 0 14px rgba(213,0,0,.5);
+    box-shadow:0 0 12px rgba(213,0,0,.45);
+    border-radius:2px;
   }
-  .flow__line-fill::after{
-    content:'';position:absolute;bottom:-4px;left:50%;
-    transform:translateX(-50%);
-    width:7px;height:7px;border-radius:50%;
-    background:var(--red);
-    box-shadow:0 0 10px 4px rgba(213,0,0,.55);
-  }
-  @media(prefers-reduced-motion:reduce){.flow__line{display:none}}
+  .flow__step--passed{opacity:.55}
+  .flow__step--passed .flow__number{color:rgba(213,0,0,.45)}
+  @media(max-width:900px){.flow__steps-prog{display:none}}
 
   /* ===================================================== FEATURES (sticky scroll reveal) */
   .features{position:relative;z-index:1;height:320vh}
@@ -874,8 +868,8 @@
 <!-- ============================ FLOW (creative journey) ============================ -->
 <section class="flow" id="process">
   <div class="flow__wrapper">
-    <div class="flow__line" id="flowLine"><div class="flow__line-fill" id="flowLineFill"></div></div>
     <div class="flow__steps">
+      <div class="flow__steps-prog" aria-hidden="true"><div class="flow__steps-fill" id="flowStepsFill"></div></div>
       <div class="flow__step flow__step--active" data-step="1">
         <div class="flow__header">
           <div class="flow__number"><span>01</span></div>
@@ -965,9 +959,9 @@
       <div class="eyebrow">The brain behind</div>
       <h2 class="standards__title">Calm by default,<br>loud in design</h2>
       <p class="standards__description">Bhupender Rajpurohit. <span class="hl">Hrithic</span>, if that's easier. Designer by degree, dreamer by DNA.</p>
-      <p class="standards__description">I got into 3D to bring my car ideas to life, <span class="hl">exactly</span> how I imagine them. Six-plus years later, these renders are where that obsession lives.</p>
-      <p class="standards__description">Cars have shaped my story since childhood. <span class="red">I do specific.</span> If something here speaks to you, reach out.</p>
-      <div class="standards__sign">BRP Specific <span>: if you know, you park it</span></div>
+      <p class="standards__description">I got into 3D to bring my car ideas to life — <span class="hl">exactly</span> how I imagine them. Six-plus years later, these renders are where that obsession lives. Cars have shaped my story since childhood.</p>
+      <p class="standards__description">I don't do generic. <span class="red">I do specific.</span> This isn't a business. It's a personal flex — a place to show what I build for the love of it.</p>
+      <div class="standards__sign">BRP Specific <span>— if you know, you park it</span></div>
     </div>
   </div>
 </section>
@@ -1411,8 +1405,7 @@
   /* ---------- flow scroll-driven steps + progress line ---------- */
   (function(){
     const flow=document.querySelector('.flow');
-    const flowLine=document.getElementById('flowLine');
-    const lineFill=document.getElementById('flowLineFill');
+    const stepsFill=document.getElementById('flowStepsFill');
     if(!flow)return;
     const reducedMotion=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     const desktop=window.innerWidth>900&&!reducedMotion;
@@ -1430,11 +1423,13 @@
       }
       if(steps.length){
         const idx=Math.min(steps.length-1,Math.floor(p*steps.length));
-        steps.forEach((s,i)=>s.classList.toggle('flow__step--active',i===idx));
+        steps.forEach((s,i)=>{
+          s.classList.toggle('flow__step--active',i===idx);
+          s.classList.toggle('flow__step--passed',i<idx);
+        });
       }
-      if(!reducedMotion&&flowLine){
-        flowLine.classList.toggle('active',p>0&&p<1);
-        if(lineFill)lineFill.style.height=(p*100)+'%';
+      if(!reducedMotion&&stepsFill){
+        stepsFill.style.height=(p*100)+'%';
       }
     }
     window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(render);},{passive:true});
@@ -1632,7 +1627,7 @@
       const mob=window.innerWidth<768;
       RADIUS=mob?240:460;
       STEP_DEG=mob?46:42;
-      STEP_RISE=mob?110:150;
+      STEP_RISE=mob?200:150;
       CARD_W=mob?Math.min(window.innerWidth*.78,300):340;
       PERSP=mob?1100:1600;
       stage.style.perspective=PERSP+'px';
