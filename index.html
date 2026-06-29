@@ -50,7 +50,7 @@
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:auto}
   body{
     background:var(--black);
     color:var(--white);
@@ -1408,38 +1408,33 @@
   },{threshold:.35});
   Object.keys(hdrMap).forEach(id=>{const el=document.getElementById(id);if(el)hdrIO.observe(el);});
 
-  /* ---------- flow scroll-driven steps ---------- */
+  /* ---------- flow scroll-driven steps + progress line ---------- */
   (function(){
-    if(window.matchMedia('(prefers-reduced-motion:reduce)').matches||window.innerWidth<=900)return;
     const flow=document.querySelector('.flow');
-    const steps=[...document.querySelectorAll('.flow__step')];
     const flowLine=document.getElementById('flowLine');
     const lineFill=document.getElementById('flowLineFill');
     if(!flow)return;
     const reducedMotion=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    const isDesktop=window.innerWidth>900;
+    const desktop=window.innerWidth>900&&!reducedMotion;
+    const steps=desktop?[...document.querySelectorAll('.flow__step')]:[];
     let rafId=null;
     function render(){
       rafId=null;
       const rect=flow.getBoundingClientRect();
-      let progress;
-      if(isDesktop){
-        /* sticky-scroll: 0 at top, 1 at bottom of 400vh track */
+      let p;
+      if(desktop){
         const scrollable=flow.offsetHeight-window.innerHeight;
-        progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,scrollable)));
+        p=Math.max(0,Math.min(1,-rect.top/Math.max(1,scrollable)));
       }else{
-        /* mobile: section crosses viewport — enter from bottom, exit at top */
-        progress=Math.max(0,Math.min(1,(window.innerHeight-rect.top)/(window.innerHeight+flow.offsetHeight)));
+        p=Math.max(0,Math.min(1,(window.innerHeight-rect.top)/(window.innerHeight+flow.offsetHeight)));
       }
-      /* step activation — desktop sticky only */
-      if(isDesktop&&steps.length){
-        const idx=Math.min(steps.length-1,Math.floor(progress*steps.length));
+      if(steps.length){
+        const idx=Math.min(steps.length-1,Math.floor(p*steps.length));
         steps.forEach((s,i)=>s.classList.toggle('flow__step--active',i===idx));
       }
-      /* line — all devices except reduced-motion */
-      if(!reducedMotion){
-        if(flowLine)flowLine.classList.toggle('active',progress>0&&progress<1);
-        if(lineFill)lineFill.style.height=(progress*100)+'%';
+      if(!reducedMotion&&flowLine){
+        flowLine.classList.toggle('active',p>0&&p<1);
+        if(lineFill)lineFill.style.height=(p*100)+'%';
       }
     }
     window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(render);},{passive:true});
