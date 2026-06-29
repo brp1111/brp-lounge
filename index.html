@@ -1393,7 +1393,7 @@
     if(!flow)return;
     const reducedMotion=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     const desktop=window.innerWidth>900&&!reducedMotion;
-    const steps=desktop?[...document.querySelectorAll('.flow__step')]:[];
+    const steps=reducedMotion?[]:[...document.querySelectorAll('.flow__step')];
     let rafId=null;
     function render(){
       rafId=null;
