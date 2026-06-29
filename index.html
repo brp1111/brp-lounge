@@ -162,6 +162,27 @@
   .flow__track-fill{width:100%;height:100%;background:var(--red);transform-origin:top;transform:scaleY(0);transition:transform .6s cubic-bezier(.4,0,.2,1)}
   .flow__step--active .flow__track-fill{transform:scaleY(1)}
   .flow__description{font-size:clamp(14px,1.6vw,16px);color:var(--muted);max-width:52ch;line-height:1.75}
+  .flow__line{
+    position:absolute;left:0;top:0;bottom:0;
+    width:2px;background:rgba(255,255,255,.06);
+    pointer-events:none;
+  }
+  .flow__line-fill{
+    position:absolute;top:0;left:0;right:0;
+    height:0%;
+    background:var(--red);
+    border-radius:0 0 2px 2px;
+    box-shadow:0 0 14px rgba(213,0,0,.5);
+    transition:height .08s linear;
+  }
+  .flow__line-fill::after{
+    content:'';position:absolute;bottom:-4px;left:50%;
+    transform:translateX(-50%);
+    width:7px;height:7px;border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 10px 4px rgba(213,0,0,.55);
+  }
+  @media(max-width:900px){.flow__line{display:none}}
 
   /* ===================================================== FEATURES (sticky scroll reveal) */
   .features{position:relative;z-index:1;height:320vh}
@@ -852,6 +873,7 @@
 <!-- ============================ FLOW (creative journey) ============================ -->
 <section class="flow" id="process">
   <div class="flow__wrapper">
+    <div class="flow__line"><div class="flow__line-fill" id="flowLineFill"></div></div>
     <div class="flow__steps">
       <div class="flow__step flow__step--active" data-step="1">
         <div class="flow__header">
@@ -1390,6 +1412,7 @@
     if(window.matchMedia('(prefers-reduced-motion:reduce)').matches||window.innerWidth<=900)return;
     const flow=document.querySelector('.flow');
     const steps=[...document.querySelectorAll('.flow__step')];
+    const lineFill=document.getElementById('flowLineFill');
     if(!flow||!steps.length)return;
     let rafId=null;
     function render(){
@@ -1399,6 +1422,7 @@
       const progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,scrollable)));
       const idx=Math.min(steps.length-1,Math.floor(progress*steps.length));
       steps.forEach((s,i)=>s.classList.toggle('flow__step--active',i===idx));
+      if(lineFill)lineFill.style.height=(progress*100)+'%';
     }
     window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(render);},{passive:true});
     render();
