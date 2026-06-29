@@ -103,8 +103,10 @@
     color:var(--muted);transition:color .25s;pointer-events:all;
   }
   .header__link:hover,.header__link.active{color:var(--white)}
-  .header__logo{display:flex;justify-content:center;pointer-events:all}
-  .header__logo img{height:clamp(22px,3vw,38px);width:auto;filter:drop-shadow(0 2px 12px rgba(0,0,0,.5))}
+  .header__logo{display:flex;align-items:center;pointer-events:all}
+  .header__logo a{display:flex;align-items:center;gap:9px;pointer-events:all}
+  .header__logo img{height:clamp(20px,2.4vw,28px);width:auto}
+  .header__logo-wordmark{font-family:var(--display);font-size:clamp(10px,1.2vw,13px);letter-spacing:.16em;text-transform:uppercase;color:var(--white);white-space:nowrap}
   .pill-btn{
     font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
     padding:10px 18px;border-radius:999px;border:.5px solid var(--line-2);
@@ -815,7 +817,8 @@
 <header class="site-header" id="siteHeader">
   <div class="header__logo">
     <a href="#top" aria-label="BRP Specific Home">
-      <img src="elements/BRP SPECIFIC Trademark.png" alt="BRP Specific">
+      <img src="brp red png.png" alt="BRP Specific">
+      <span class="header__logo-wordmark">BRP Specific</span>
     </a>
   </div>
   <nav class="header__nav-right">
@@ -1065,11 +1068,6 @@
 <!-- ============================ CONTACT / CTA ============================ -->
 <section class="cta-section reveal" id="contact">
   <h2 class="cta-section__title">Say less.<br>Say hello.</h2>
-  <div class="cta-section__actions">
-    <a href="https://www.instagram.com/brp_specific" target="_blank" rel="noopener" class="pill-btn pill-btn--glass">Instagram</a>
-    <a href="mailto:brpdesigndna@gmail.com" class="pill-btn pill-btn--dark">Email</a>
-    <a href="https://www.linkedin.com/in/bhupender-rajpurohit-693491208" target="_blank" rel="noopener" class="pill-btn pill-btn--glass">LinkedIn</a>
-  </div>
   <div class="contact-wrap">
     <div class="card-stage">
       <img class="card-img" src="elements/DVC.svg" alt="BRP Specific, Bhupender Rajpurohit visiting card">
@@ -1627,7 +1625,7 @@
     function applyTransforms(p){
       const leadDeg=p*(N-1)*STEP_DEG;
       const centerIdx=p*(N-1);
-      let frontI=0,frontCos=-Infinity;
+      const frontI=Math.min(N-1,Math.max(0,Math.round(centerIdx)));
       items.forEach((el,i)=>{
         const deg=i*STEP_DEG-leadDeg;
         const rad=deg*Math.PI/180;
@@ -1642,7 +1640,6 @@
         el.style.transform=`translate3d(${tx.toFixed(1)}px,${ty.toFixed(1)}px,${tz.toFixed(1)}px) rotateY(${deg.toFixed(2)}deg) scale3d(${scale},${scale},1)`;
         el.style.opacity=opacity;
         el.style.zIndex=Math.round(cosA*50+50);
-        if(cosA>frontCos){frontCos=cosA;frontI=i;}
       });
       items.forEach((el,i)=>el.classList.toggle('front',i===frontI));
       if(counterEl)counterEl.innerHTML=
