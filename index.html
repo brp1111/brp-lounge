@@ -462,6 +462,7 @@
     opacity:0;transition:opacity .3s;
   }
   .lb.open{display:flex;opacity:1}
+  .lb-stage{display:flex;align-items:center;justify-content:center;will-change:transform,opacity}
   .lb img,.lb video{
     max-width:92vw;max-height:88vh;border-radius:8px;border:.5px solid var(--line-2);
   }
@@ -1087,8 +1088,10 @@
 <div class="lb" id="lightbox">
   <div class="lb-close" id="lbClose">Close ✕</div>
   <div class="lb-nav lb-prev" id="lbPrev">‹</div>
-  <img id="lbImg" src="" alt="">
-  <video id="lbVid" controls style="display:none"></video>
+  <div class="lb-stage" id="lbStage">
+    <img id="lbImg" src="" alt="">
+    <video id="lbVid" controls style="display:none"></video>
+  </div>
   <div class="lb-nav lb-next" id="lbNext">›</div>
 </div>
 
@@ -1654,9 +1657,11 @@
 
   /* ---------- lightbox (scoped per section, reversed to match coverflow) ---------- */
   const lb=document.getElementById('lightbox');
+  const lbStage=document.getElementById('lbStage');
   const lbImg=document.getElementById('lbImg');
   const lbVid=document.getElementById('lbVid');
   let lbPool=[],lbPoolTypes=[],idx=0;
+  const LB_EASE='transform .3s cubic-bezier(.22,.61,.36,1), opacity .3s cubic-bezier(.22,.61,.36,1)';
 
   function isVid(i){return lbPoolTypes[i]==='video'}
 
@@ -1672,6 +1677,7 @@
 
   function open(pool,types,i){
     lbPool=pool;lbPoolTypes=types;idx=i;
+    lbBusy=false;lbStage.style.transition='none';lbStage.style.transform='translateX(0)';lbStage.style.opacity='1';
     show(idx);lb.classList.add('open');document.body.style.overflow='hidden';
     history.pushState({lightbox:true},'');
   }
@@ -1680,19 +1686,63 @@
     lb.classList.remove('open');document.body.style.overflow='';lbVid.pause();lbVid.src='';
     if(history.state&&history.state.lightbox)history.back();
   }
-  function go(d){idx=(idx+d+lbPool.length)%lbPool.length;show(idx)}
+  let lbBusy=false;
+  function go(d){
+    if(lbBusy||lbPool.length<2)return;
+    lbBusy=true;
+    const w=lb.clientWidth||window.innerWidth;
+    lbStage.style.transition=LB_EASE;
+    lbStage.style.transform=`translateX(${-d*w*.4}px)`;
+    lbStage.style.opacity='0';
+    setTimeout(()=>{
+      idx=(idx+d+lbPool.length)%lbPool.length;
+      show(idx);
+      lbStage.style.transition='none';
+      lbStage.style.transform=`translateX(${d*w*.4}px)`;
+      void lbStage.offsetWidth;
+      requestAnimationFrame(()=>{
+        lbStage.style.transition=LB_EASE;
+        lbStage.style.transform='translateX(0)';
+        lbStage.style.opacity='1';
+        setTimeout(()=>{lbBusy=false},300);
+      });
+    },300);
+  }
 
   window.addEventListener('popstate',()=>{
     if(lb.classList.contains('open')){lb.classList.remove('open');document.body.style.overflow='';lbVid.pause();lbVid.src='';}
   });
 
-  let tsX=0,tsY=0;
-  lb.addEventListener('touchstart',e=>{tsX=e.touches[0].clientX;tsY=e.touches[0].clientY},{passive:true});
+  let tsX=0,tsY=0,lbDragging=false;
+  lb.addEventListener('touchstart',e=>{
+    if(lbBusy)return;
+    tsX=e.touches[0].clientX;tsY=e.touches[0].clientY;
+    lbDragging=true;
+    lbStage.style.transition='none';
+  },{passive:true});
+  lb.addEventListener('touchmove',e=>{
+    if(!lbDragging||lbBusy)return;
+    const dx=e.touches[0].clientX-tsX;
+    const dy=e.touches[0].clientY-tsY;
+    if(Math.abs(dx)>Math.abs(dy)){
+      lbStage.style.transform=`translateX(${dx}px)`;
+      lbStage.style.opacity=String(1-Math.min(Math.abs(dx)/400,.5));
+    }
+  },{passive:true});
   lb.addEventListener('touchend',e=>{
+    if(!lbDragging)return;
+    lbDragging=false;
     const dx=e.changedTouches[0].clientX-tsX;
     const dy=e.changedTouches[0].clientY-tsY;
-    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){go(dx<0?1:-1);}
-    else if(dy>80){close();}
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){
+      go(dx<0?1:-1);
+    } else if(dy>80){
+      close();
+    } else {
+      lbStage.style.transition=LB_EASE;
+      lbStage.style.transform='translateX(0)';
+      lbStage.style.opacity='1';
+    }
   },{passive:true});
 
   /* helix gallery lightbox — forward DOM order */
